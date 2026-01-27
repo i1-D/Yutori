@@ -150,21 +150,26 @@
     });
   }
 
-  /* Space paragraph: reveal words one-by-one when each div enters viewport */
+  /* Space paragraph: reveal words on scroll in, fade back to 0.3 when scroll out */
   var spaceParagraphs = document.querySelectorAll('.space-paragraph');
   if (spaceParagraphs.length && 'IntersectionObserver' in window) {
     var wordStaggerMs = 50;
     var spaceObserver = new IntersectionObserver(
       function (entries) {
         entries.forEach(function (entry) {
-          if (!entry.isIntersecting) return;
           var paragraph = entry.target;
-          paragraph.classList.add('is-in-view');
           var words = paragraph.querySelectorAll('.space-word');
-          words.forEach(function (word, i) {
-            word.style.transitionDelay = (i * wordStaggerMs) + 'ms';
-          });
-          spaceObserver.unobserve(paragraph);
+          if (entry.isIntersecting) {
+            paragraph.classList.add('is-in-view');
+            words.forEach(function (word, i) {
+              word.style.transitionDelay = (i * wordStaggerMs) + 'ms';
+            });
+          } else {
+            paragraph.classList.remove('is-in-view');
+            words.forEach(function (word) {
+              word.style.transitionDelay = '';
+            });
+          }
         });
       },
       { rootMargin: '0px 0px -5% 0px', threshold: 0.1 }
