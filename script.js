@@ -8,6 +8,47 @@
   const hero = document.querySelector('.hero');
   const sections = document.querySelectorAll('.section');
 
+  /* Lenis smooth scrolling – applies to full page (hero, all sections, footer) */
+  var lenis;
+  if (typeof Lenis !== 'undefined') {
+    lenis = new Lenis({
+      duration: 1.2,
+      easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+      orientation: 'vertical',
+      smoothWheel: true,
+      touchMultiplier: 2
+    });
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    /* Recalculate scrollable height so footer and all sections are included */
+    function refreshLenis() {
+      if (lenis && lenis.resize) lenis.resize();
+    }
+    if (document.readyState === 'complete') {
+      refreshLenis();
+    } else {
+      window.addEventListener('load', refreshLenis);
+    }
+    window.addEventListener('resize', refreshLenis);
+
+    /* Smooth scroll to anchor targets (e.g. #consultation in footer) */
+    document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+      var hash = anchor.getAttribute('href');
+      if (hash === '#') return;
+      anchor.addEventListener('click', function (e) {
+        var target = document.querySelector(hash);
+        if (target && lenis) {
+          e.preventDefault();
+          lenis.scrollTo(target, { offset: 0, duration: 1.2 });
+        }
+      });
+    });
+  }
+
   if (menuToggle && navOverlay) {
     menuToggle.addEventListener('click', function () {
       const isOpen = navOverlay.classList.toggle('is-open');
@@ -47,7 +88,11 @@
       }
     }
 
-    window.addEventListener('scroll', onScroll, { passive: true });
+    if (lenis) {
+      lenis.on('scroll', onScroll);
+    } else {
+      window.addEventListener('scroll', onScroll, { passive: true });
+    }
     window.addEventListener('resize', onScroll);
     updateHeaderMode();
   }
@@ -55,11 +100,11 @@
   /* CTA fixed: slide in from right on first scroll down, slide out when scrolling up */
   if (ctaFixed) {
     var scrollThreshold = 80;
-    var lastScrollY = window.scrollY;
+    var lastScrollY = lenis ? 0 : window.scrollY;
     var ticking = false;
 
-    function updateCtaVisibility() {
-      var scrollY = window.scrollY;
+    function updateCtaVisibility(scrollY) {
+      if (scrollY == null) scrollY = window.scrollY;
       var direction = scrollY > lastScrollY ? 'down' : 'up';
       lastScrollY = scrollY;
 
@@ -71,19 +116,26 @@
       ticking = false;
     }
 
-    function onScrollCta() {
+    function onScrollCta(ev) {
       if (!ticking) {
-        requestAnimationFrame(updateCtaVisibility);
+        requestAnimationFrame(function () {
+          updateCtaVisibility(ev && typeof ev.scroll === 'number' ? ev.scroll : window.scrollY);
+        });
         ticking = true;
       }
     }
 
-    window.addEventListener('scroll', onScrollCta, { passive: true });
+    if (lenis) {
+      lenis.on('scroll', onScrollCta);
+    } else {
+      window.addEventListener('scroll', onScrollCta, { passive: true });
+    }
   }
 
-  /* Section scroll-in: fade + slide up when entering viewport */
-  if (sections.length && 'IntersectionObserver' in window) {
-    const sectionObserver = new IntersectionObserver(
+  /* Section & footer scroll-in: smooth ease-out reveal (Kasia Siwosz–style) */
+  var scrollRevealEls = document.querySelectorAll('.section, .footer');
+  if (scrollRevealEls.length && 'IntersectionObserver' in window) {
+    var scrollRevealObserver = new IntersectionObserver(
       function (entries) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
@@ -93,29 +145,32 @@
       },
       { rootMargin: '0px 0px -8% 0px', threshold: 0.05 }
     );
-    sections.forEach(function (section) {
-      sectionObserver.observe(section);
+    scrollRevealEls.forEach(function (el) {
+      scrollRevealObserver.observe(el);
     });
   }
 
-  /* Space paragraph: reveal words one-by-one when div enters viewport */
-  var spaceParagraph = document.querySelector('.space-paragraph');
-  if (spaceParagraph && 'IntersectionObserver' in window) {
+  /* Space paragraph: reveal words one-by-one when each div enters viewport */
+  var spaceParagraphs = document.querySelectorAll('.space-paragraph');
+  if (spaceParagraphs.length && 'IntersectionObserver' in window) {
     var wordStaggerMs = 50;
     var spaceObserver = new IntersectionObserver(
       function (entries) {
         entries.forEach(function (entry) {
           if (!entry.isIntersecting) return;
-          spaceParagraph.classList.add('is-in-view');
-          var words = spaceParagraph.querySelectorAll('.space-word');
+          var paragraph = entry.target;
+          paragraph.classList.add('is-in-view');
+          var words = paragraph.querySelectorAll('.space-word');
           words.forEach(function (word, i) {
             word.style.transitionDelay = (i * wordStaggerMs) + 'ms';
           });
-          spaceObserver.unobserve(spaceParagraph);
+          spaceObserver.unobserve(paragraph);
         });
       },
       { rootMargin: '0px 0px -5% 0px', threshold: 0.1 }
     );
-    spaceObserver.observe(spaceParagraph);
+    spaceParagraphs.forEach(function (paragraph) {
+      spaceObserver.observe(paragraph);
+    });
   }
 })();

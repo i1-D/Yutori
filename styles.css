@@ -55,7 +55,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto; /* Lenis handles smooth scrolling */
 }
 
 body {
@@ -179,7 +179,7 @@ img, svg {
 .nav-link--center {
   justify-self: center;
   font-size: 24px;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .menu-toggle {
@@ -259,144 +259,6 @@ img, svg {
   }
 }
 
-/* Optional overlay clouds – hidden when using image background */
-.hero-clouds {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-  display: none;
-}
-
-.hero-cloud {
-  position: absolute;
-  border-radius: 50%;
-  will-change: transform;
-}
-
-/* Upper layer – dense dark clouds */
-.hero-cloud--1 {
-  width: 95vw;
-  height: 58vw;
-  filter: blur(60px);
-  opacity: 0.88;
-  background: radial-gradient(ellipse at center, rgba(50, 54, 62, 0.9) 0%, rgba(30, 33, 40, 0.5) 45%, transparent 72%);
-  top: -30%;
-  left: -20%;
-  animation: cloud-drift-slow 55s ease-in-out infinite;
-}
-
-.hero-cloud--2 {
-  width: 80vw;
-  height: 50vw;
-  filter: blur(70px);
-  opacity: 0.82;
-  background: radial-gradient(ellipse at center, rgba(45, 50, 58, 0.85) 0%, rgba(26, 30, 36, 0.45) 48%, transparent 70%);
-  top: -15%;
-  right: -25%;
-  animation: cloud-drift-medium 48s ease-in-out infinite reverse;
-}
-
-.hero-cloud--3 {
-  width: 85vw;
-  height: 52vw;
-  filter: blur(65px);
-  opacity: 0.8;
-  background: radial-gradient(ellipse at center, rgba(48, 52, 60, 0.82) 0%, rgba(28, 32, 38, 0.4) 50%, transparent 72%);
-  top: 0%;
-  left: -35%;
-  animation: cloud-drift-slow 60s ease-in-out infinite 6s;
-}
-
-/* Mid layer – wispy movement */
-.hero-cloud--4 {
-  width: 65vw;
-  height: 40vw;
-  filter: blur(72px);
-  opacity: 0.72;
-  background: radial-gradient(ellipse at center, rgba(58, 63, 72, 0.7) 0%, rgba(38, 42, 50, 0.35) 50%, transparent 74%);
-  top: 25%;
-  left: 15%;
-  animation: cloud-drift-medium 44s ease-in-out infinite 2s;
-}
-
-.hero-cloud--5 {
-  width: 70vw;
-  height: 44vw;
-  filter: blur(68px);
-  opacity: 0.68;
-  background: radial-gradient(ellipse at center, rgba(52, 57, 66, 0.65) 0%, rgba(34, 38, 46, 0.3) 52%, transparent 74%);
-  bottom: 20%;
-  right: -20%;
-  animation: cloud-drift-slow 52s ease-in-out infinite reverse 5s;
-}
-
-.hero-cloud--6 {
-  width: 75vw;
-  height: 46vw;
-  filter: blur(78px);
-  opacity: 0.62;
-  background: radial-gradient(ellipse at center, rgba(65, 70, 80, 0.58) 0%, rgba(42, 46, 55, 0.25) 52%, transparent 72%);
-  top: 45%;
-  left: -30%;
-  animation: cloud-drift-fast 40s ease-in-out infinite 1s;
-}
-
-.hero-cloud--7 {
-  width: 55vw;
-  height: 36vw;
-  filter: blur(55px);
-  opacity: 0.76;
-  background: radial-gradient(ellipse at center, rgba(54, 58, 66, 0.72) 0%, rgba(34, 38, 44, 0.38) 48%, transparent 70%);
-  top: 12%;
-  left: 30%;
-  animation: cloud-drift-medium 46s ease-in-out infinite reverse 4s;
-}
-
-/* Deep layer – slow horizon drift */
-.hero-cloud--8 {
-  width: 90vw;
-  height: 50vw;
-  filter: blur(85px);
-  opacity: 0.58;
-  background: radial-gradient(ellipse at center, rgba(55, 60, 70, 0.55) 0%, rgba(35, 40, 48, 0.22) 55%, transparent 72%);
-  bottom: -15%;
-  left: -15%;
-  animation: cloud-drift-slow 58s ease-in-out infinite 3s;
-}
-
-/* Extra layer for more depth */
-.hero-cloud--9 {
-  width: 72vw;
-  height: 44vw;
-  filter: blur(62px);
-  opacity: 0.64;
-  background: radial-gradient(ellipse at center, rgba(60, 65, 74, 0.6) 0%, rgba(38, 42, 50, 0.28) 50%, transparent 72%);
-  top: 55%;
-  right: -18%;
-  animation: cloud-drift-medium 50s ease-in-out infinite reverse 7s;
-}
-
-/* Continuous drift – keeps clouds moving (varied speed/direction for parallax) */
-@keyframes cloud-drift-slow {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25% { transform: translate(8%, -3%) scale(1.03); }
-  50% { transform: translate(-6%, 2%) scale(0.98); }
-  75% { transform: translate(5%, 1%) scale(1.02); }
-}
-
-@keyframes cloud-drift-medium {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(-12%, 4%) scale(1.02); }
-  66% { transform: translate(10%, -2%) scale(0.99); }
-}
-
-@keyframes cloud-drift-fast {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-18%, 3%) scale(1.04); }
-}
-
 .hero-content {
   position: relative;
   z-index: 1;
@@ -433,20 +295,6 @@ img, svg {
   font-size: 120px;
   font-weight: 400;
   width: 100%;
-}
-
-.hero-butterfly {
-  position: absolute;
-  left: 5%;
-  bottom: 25%;
-  width: clamp(80px, 15vw, 140px);
-  opacity: 0.85;
-  pointer-events: none;
-}
-
-.hero-butterfly svg {
-  width: 100%;
-  height: auto;
 }
 
 .hero .btn.cta-fixed {
@@ -536,6 +384,7 @@ a.btn {
 }
 
 /* ----- Sections ----- */
+/* Scroll reveal: smooth ease-out (Kasia Siwosz–style section transition) */
 .section {
   display: flex;
   flex-direction: column;
@@ -548,8 +397,8 @@ a.btn {
   height: fit-content;
   padding: var(--space-120) 60px;
   opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transform: translateY(48px);
+  transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .section.is-in-view {
@@ -572,12 +421,25 @@ a.btn {
 }
 
 /* Blurred Thinking ----- */
-.section--blurred {
+.section--blurred, .section--spacious, .section--aligned, .section--everyone  {
   position: relative;
   width: 100%;
   height: fit-content;
   max-width: none;
 }
+
+.section--spacious {
+  background-color: #96CADF;
+}
+
+.section--aligned {
+  background-color: #E4A6BB;
+}
+
+.section--everyone {
+  background-color: #E3A6E4;
+}
+
 
 .blurred-cols {
   display: flex;
@@ -632,6 +494,14 @@ a.btn {
   background: #fff;
   padding: 120px 60px 120px 60px;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
+  opacity: 0;
+  transform: translateY(48px);
+  transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.footer.is-in-view {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .footer-grid {
@@ -781,12 +651,6 @@ a.btn {
 
   .hero-title {
     text-align: center;
-  }
-
-  .hero-butterfly {
-    left: 50%;
-    bottom: 35%;
-    transform: translateX(-50%);
   }
 
   .hero .btn.cta-fixed {
