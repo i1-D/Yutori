@@ -230,7 +230,7 @@ img, svg {
   overflow: hidden;
 }
 
-/* Hero background – dark cloud image with subtle drift */
+/* Hero background – dark cloud image with subtle drift + transform animation */
 .hero-bg {
   position: absolute;
   inset: 0;
@@ -240,7 +240,7 @@ img, svg {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  animation: hero-bg-drift 50s ease-in-out infinite;
+  animation: hero-bg-drift 50s ease-in-out infinite, hero-bg-transform 12s ease-in-out infinite;
 }
 
 @keyframes hero-bg-drift {
@@ -248,6 +248,15 @@ img, svg {
   25% { background-position: 52% 48%; }
   50% { background-position: 48% 52%; }
   75% { background-position: 51% 49%; }
+}
+
+@keyframes hero-bg-transform {
+  0%, 100% {
+    transform: translateX(0) scale(1.2);
+  }
+  50% {
+    transform: translateX(50px) scale(1.2);
+  }
 }
 
 /* Optional overlay clouds – hidden when using image background */
