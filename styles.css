@@ -269,23 +269,40 @@ body.in-footer .header {
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: center;
   padding: calc(80px + var(--space-80)) var(--space-40) var(--space-80);
   overflow: hidden;
 }
 
-/* Hero background – dark cloud image with subtle drift + transform animation */
+/* Hero background – dark cloud image with subtle drift + transform animation + parallax */
 .hero-bg {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background-color: #08090c;
-  background-image: url('images/hero-dark.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   animation: hero-bg-drift 50s ease-in-out infinite, hero-bg-transform 12s ease-in-out infinite;
+  will-change: transform, opacity;
+  transform: translateY(0);
+  transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero-bg--dark {
+  background-color: #08090c;
+  background-image: url('images/hero-dark.jpg');
+  opacity: 1;
+  z-index: 0;
+  filter: grayscale(1);
+}
+
+.hero-bg--bright {
+  background-color: #08090c;
+  background-image: url('images/hero-bright.jpg');
+  opacity: 0;
+  z-index: 0;
+  filter: blur(4px);
 }
 
 @keyframes hero-bg-drift {
@@ -310,6 +327,15 @@ body.in-footer .header {
   width: 100%;
   max-width: none;
   margin: 0 auto;
+  padding-bottom: 48px;
+  will-change: transform;
+  transform: translateY(0);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 100vh;
 }
 
 .hero-title, .hero-title-2 {
@@ -320,36 +346,50 @@ body.in-footer .header {
   letter-spacing: var(--text-hero-spacing);
   color: #fff;
   text-transform: uppercase;
-  margin: 0 0 var(--space-48);
   display: flex;
   flex-direction: column;
   gap: var(--space-32);
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  margin: 0;
+  text-align: center;
 }
 
-/* Initial: title 1 visible; title 2 hidden below. On scroll: title 1 up + fade, title 2 slide up into view */
 .hero-title {
+  position: relative;
+  z-index: 2;
   transform: translateY(0);
   opacity: 1;
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+  pointer-events: none;
+  margin-bottom: var(--space-32);
 }
 
 .hero-title-2 {
+  position: relative;
+  z-index: 2;
   opacity: 0;
-  transform: translateY(48px);
-  margin-top: calc(-1 * var(--space-48));
+  transform: translateY(60px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+  pointer-events: none;
+  margin-top: 0;
+  margin-bottom: var(--space-48);
 }
 
-body.hero-titles-scrolled .hero-title {
-  transform: translateY(-48px);
-  opacity: 0.12;
+.hero-title-2 span:first-child {
+  font-size: 4.688vw;
+  font-weight: 300;
+  text-transform: uppercase;
 }
 
-body.hero-titles-scrolled .hero-title-2 {
-  opacity: 1;
-  transform: translateY(0);
+.hero-title-2 span:last-child {
+  font-size: 6.25vw;
+  font-weight: 400;
 }
 
 .hero-title span, .hero-title-2 span {
+  font-size: 6.25vw;
+  font-weight: 400;
   text-align: center;
   width: 100%;
 }
@@ -359,44 +399,6 @@ body.hero-titles-scrolled .hero-title-2 {
   font-weight: 300;
 }
 
-.hero-title span:last-child, .hero-title-2 span {
-  font-size: 6.25vw;
-  font-weight: 400;
-}
-
-.hero .btn.cta-fixed {
-  position: fixed;
-  bottom: 48px;
-  right: 48px;
-  z-index: 50;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  height: 80px;
-  padding: 24px var(--space-24);
-  margin: 0;
-  background: rgba(0, 0, 0, 1);
-  border: none;
-  opacity: 0;
-  transform: translateX(calc(100% + 48px));
-  pointer-events: none;
-  transition: opacity 0.45s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-body.cta-visible .hero .btn.cta-fixed {
-  opacity: 1;
-  transform: translateX(0);
-  pointer-events: auto;
-}
-
-/* In footer: hide CTA with same slide-out effect as scrolling up */
-body.in-footer .hero .btn.cta-fixed {
-  opacity: 0;
-  transform: translateX(calc(100% + 48px));
-  pointer-events: none;
-}
 
 /* ----- Buttons ----- */
 .btn {
@@ -406,12 +408,13 @@ body.in-footer .hero .btn.cta-fixed {
   padding: var(--space-12) var(--space-24);
   min-height: 48px;
   font-family: var(--font-body);
-  font-size: 0.9375rem;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 400;
   line-height: 1.3;
   letter-spacing: 0.03em;
   border-radius: var(--radius);
   cursor: pointer;
+  height: 60px;
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
 }
 
@@ -423,21 +426,6 @@ a.btn {
   background: var(--color-btn-bg);
   color: var(--color-btn-text);
   border: 2px solid var(--color-btn-bg);
-}
-
-.hero .btn.cta-fixed.btn--primary {
-  background: rgba(0, 0, 0, 1);
-  border: none;
-  border-image: none;
-}
-
-.hero .btn.cta-fixed.btn--primary:hover {
-  background: rgba(0, 0, 0, 0.9);
-  border: none;
-}
-
-#ctaFixed {
-  border-radius: 0;
 }
 
 .btn--primary:hover {
@@ -612,11 +600,29 @@ a.btn {
   gap: var(--space-80);
   max-width: calc(50% - var(--space-56) / 2);
   text-align: right;
+  margin-left: auto;
 }
 
 .footer-col--right .footer-col {
   flex: 0 1 auto;
   text-align: right;
+}
+
+.footer-col--right .footer-heading {
+  text-align: right;
+}
+
+.footer-col--right .footer-links {
+  text-align: right;
+}
+
+.footer-col--right .footer-links li {
+  text-align: right;
+}
+
+.footer-col--right .footer-links a {
+  text-align: right;
+  display: inline-block;
 }
 
 .footer-heading {
@@ -682,10 +688,11 @@ a.btn {
   position: fixed;
   inset: 0;
   z-index: 99;
-  background: rgba(26, 26, 29, 0.97);
+  background: rgba(26, 26, 29, 1);
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  padding-right: var(--space-120);
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -699,15 +706,16 @@ a.btn {
 .nav-overlay-menu {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   gap: var(--space-32);
 }
 
 .nav-overlay-menu a {
   font-family: var(--font-heading);
-  font-size: 1.5rem;
+  font-size: 56px;
   font-weight: 500;
   color: #fff;
+  text-align: right;
   transition: opacity 0.2s ease;
 }
 
@@ -734,6 +742,7 @@ a.btn {
     max-width: 100%;
     flex: 1 1 100%;
     flex-direction: row;
+    margin-left: auto;
   }
 }
 
@@ -759,15 +768,6 @@ a.btn {
     text-align: center;
   }
 
-  .hero .btn.cta-fixed {
-    margin: 0;
-    width: fit-content;
-    text-align: center;
-    left: auto;
-    right: 48px;
-    bottom: 48px;
-  }
-
   .section {
     padding: var(--space-64) var(--space-24);
   }
@@ -785,6 +785,7 @@ a.btn {
     max-width: 100%;
     flex: 1 1 100%;
     flex-direction: column;
+    margin-left: auto;
   }
 
   .footer-col--right .footer-col {

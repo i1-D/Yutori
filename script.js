@@ -4,8 +4,12 @@
   const menuToggle = document.querySelector('.menu-toggle');
   const navOverlay = document.getElementById('navOverlay');
   const header = document.querySelector('.header');
-  const ctaFixed = document.getElementById('ctaFixed');
   const hero = document.querySelector('.hero');
+  const heroBgDark = document.querySelector('.hero-bg--dark');
+  const heroBgBright = document.querySelector('.hero-bg--bright');
+  const heroContent = document.querySelector('.hero-content');
+  const heroTitle = document.querySelector('.hero-title');
+  const heroTitle2 = document.querySelector('.hero-title-2');
   const sections = document.querySelectorAll('.section');
 
   /* Lenis smooth scrolling – applies to full page (hero, all sections, footer) */
@@ -18,13 +22,14 @@
       smoothWheel: true,
       touchMultiplier: 2
     });
-    /* Start stopped so first scroll only triggers hero title animation; lenis.start() after first scroll */
-    if (lenis.stop) lenis.stop();
     function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
     }
     requestAnimationFrame(raf);
+    
+    /* Start Lenis smooth scrolling immediately */
+    if (lenis.start) lenis.start();
 
     /* Recalculate scrollable height so footer and all sections are included */
     function refreshLenis() {
@@ -99,112 +104,173 @@
     updateHeaderMode();
   }
 
-  /* Hero titles: first scroll down only triggers animation (no page scroll); from second scroll onwards, page scrolls normally */
-  var heroTitlesThreshold = 60;
-  var firstScrollConsumed = false;
-  var heroTitlesTicking = false;
-
   function getScrollY() {
     return lenis && typeof lenis.scroll === 'number' ? lenis.scroll : window.scrollY;
   }
 
-  function updateHeroTitles(scrollY) {
-    if (scrollY == null) scrollY = getScrollY();
-    if (scrollY > heroTitlesThreshold) {
-      document.body.classList.add('hero-titles-scrolled');
-    } else {
-      document.body.classList.remove('hero-titles-scrolled');
-    }
-    heroTitlesTicking = false;
-  }
-
-  function onScrollHeroTitles(ev) {
-    if (!heroTitlesTicking) {
-      requestAnimationFrame(function () {
-        var scrollY = typeof ev === 'number' ? ev : (ev && typeof ev.scroll === 'number' ? ev.scroll : getScrollY());
-        updateHeroTitles(scrollY);
-      });
-      heroTitlesTicking = true;
-    }
-  }
-
-  if (lenis) {
-    lenis.on('scroll', onScrollHeroTitles);
-  } else {
-    window.addEventListener('scroll', onScrollHeroTitles, { passive: true });
-  }
-  updateHeroTitles();
-
-  /* Consume first scroll down at top of page: only run hero title animation, no actual scroll */
-  function onFirstWheel(e) {
-    if (firstScrollConsumed) return;
-    var scrollY = getScrollY();
-    if (scrollY > 5) return;
-    if (e.deltaY <= 0) return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    firstScrollConsumed = true;
-    document.body.classList.add('hero-titles-scrolled');
-    if (lenis && lenis.start) lenis.start();
-    window.removeEventListener('wheel', onFirstWheel, { capture: true });
-    document.removeEventListener('touchmove', onFirstTouchMove, { capture: true, passive: false });
-  }
-
-  var touchStartY = 0;
-  function onFirstTouchMove(e) {
-    if (firstScrollConsumed) return;
-    var scrollY = getScrollY();
-    if (scrollY > 5) return;
-    var y = e.touches && e.touches[0] ? e.touches[0].clientY : e.clientY;
-    if (y >= touchStartY) return;
-    e.preventDefault();
-    firstScrollConsumed = true;
-    document.body.classList.add('hero-titles-scrolled');
-    if (lenis && lenis.start) lenis.start();
-    window.removeEventListener('wheel', onFirstWheel, { capture: true });
-    document.removeEventListener('touchmove', onFirstTouchMove, { capture: true, passive: false });
-  }
-
-  document.addEventListener('touchstart', function (e) {
-    touchStartY = e.touches && e.touches[0] ? e.touches[0].clientY : e.clientY;
-  }, { passive: true });
-
-  window.addEventListener('wheel', onFirstWheel, { passive: false, capture: true });
-  document.addEventListener('touchmove', onFirstTouchMove, { passive: false, capture: true });
-
-  /* CTA fixed: slide in from right on first scroll down, slide out when scrolling up */
-  if (ctaFixed) {
-    var scrollThreshold = 80;
-    var lastScrollY = lenis ? 0 : window.scrollY;
-    var ticking = false;
-
-    function updateCtaVisibility(scrollY) {
-      if (scrollY == null) scrollY = window.scrollY;
-      var direction = scrollY > lastScrollY ? 'down' : 'up';
-      lastScrollY = scrollY;
-
-      if (direction === 'down' && scrollY > scrollThreshold) {
-        document.body.classList.add('cta-visible');
-      } else if (direction === 'up') {
-        document.body.classList.remove('cta-visible');
+  /* Hero parallax: background and text move at different speeds on scroll */
+  if (hero && heroBgDark && heroBgBright && heroContent) {
+    var heroParallaxTicking = false;
+    
+    function updateHeroParallax(scrollY) {
+      if (scrollY == null) scrollY = getScrollY();
+      
+      var heroRect = hero.getBoundingClientRect();
+      var heroTop = hero.offsetTop;
+      var heroHeight = hero.offsetHeight;
+      var viewportHeight = window.innerHeight;
+      
+      // Calculate scroll progress through hero section (0 = top of hero, 1 = bottom)
+      var scrollProgress = Math.max(0, Math.min(1, (scrollY - heroTop + viewportHeight) / (heroHeight + viewportHeight)));
+      
+      // Only apply parallax while hero is visible or just scrolled past
+      if (heroRect.bottom > -viewportHeight && heroRect.top < viewportHeight * 2) {
+        // Background moves slower (0.6x speed) - creates depth effect
+        // As user scrolls down, background moves up slower, creating parallax
+        var bgOffset = scrollProgress * viewportHeight * 0.6;
+        heroBgDark.style.transform = `translateY(${-bgOffset}px)`;
+        heroBgBright.style.transform = `translateY(${-bgOffset}px)`;
+        
+        // Text moves even slower (0.4x speed) - stays more in place relative to viewport
+        var textOffset = scrollProgress * viewportHeight * 0.4;
+        heroContent.style.transform = `translateY(${-textOffset}px)`;
+      } else {
+        // Reset when hero is far out of view
+        if (heroRect.bottom < -viewportHeight) {
+          heroBgDark.style.transform = `translateY(${-viewportHeight * 0.6}px)`;
+          heroBgBright.style.transform = `translateY(${-viewportHeight * 0.6}px)`;
+          heroContent.style.transform = `translateY(${-viewportHeight * 0.4}px)`;
+        } else {
+          heroBgDark.style.transform = 'translateY(0)';
+          heroBgBright.style.transform = 'translateY(0)';
+          heroContent.style.transform = 'translateY(0)';
+        }
       }
-      ticking = false;
+      
+      heroParallaxTicking = false;
     }
-
-    function onScrollCta(ev) {
-      if (!ticking) {
+    
+    function onScrollHeroParallax(ev) {
+      if (!heroParallaxTicking) {
         requestAnimationFrame(function () {
-          updateCtaVisibility(ev && typeof ev.scroll === 'number' ? ev.scroll : window.scrollY);
+          var scrollY = typeof ev === 'number' ? ev : (ev && typeof ev.scroll === 'number' ? ev.scroll : getScrollY());
+          updateHeroParallax(scrollY);
         });
-        ticking = true;
+        heroParallaxTicking = true;
       }
     }
-
+    
     if (lenis) {
-      lenis.on('scroll', onScrollCta);
+      lenis.on('scroll', onScrollHeroParallax);
     } else {
-      window.addEventListener('scroll', onScrollCta, { passive: true });
+      window.addEventListener('scroll', onScrollHeroParallax, { passive: true });
     }
+    window.addEventListener('resize', function () {
+      updateHeroParallax();
+    });
+    updateHeroParallax();
+  }
+
+  /* Hero title scroll animation: reveal title-2 on scroll, reverse on scroll up */
+  /* Also changes background from hero-dark to hero-bright on scroll */
+  if (hero && heroTitle && heroTitle2 && heroBgDark && heroBgBright) {
+    var heroTitleTicking = false;
+    var lastScrollY = 0;
+    
+    // Set initial state - title-2 hidden, background dark
+    heroTitle2.style.opacity = '0';
+    heroTitle2.style.transform = 'translateY(100px)';
+    heroBgDark.style.opacity = 1;
+    heroBgBright.style.opacity = 0;
+    
+    function updateHeroTitleAnimation(scrollY) {
+      if (scrollY == null) scrollY = getScrollY();
+      
+      var heroRect = hero.getBoundingClientRect();
+      var heroTop = hero.offsetTop;
+      var heroHeight = hero.offsetHeight;
+      var viewportHeight = window.innerHeight;
+      
+      // Calculate scroll progress through hero section (0 = top of hero, 1 = bottom)
+      var scrollProgress = Math.max(0, Math.min(1, (scrollY - heroTop + viewportHeight) / (heroHeight + viewportHeight)));
+      var animationStart = 0.2;
+      var animationEnd = 0.6;
+      
+      // Check if we're at the top of the hero section (before animation starts)
+      var isAtTop = scrollProgress < animationStart || scrollY <= heroTop;
+      
+      // Only animate while hero is visible
+      if (heroRect.bottom > -viewportHeight && heroRect.top < viewportHeight * 2) {
+        if (isAtTop) {
+          // At top of hero or scrolled back up - fully reset to original state
+          heroTitle.style.opacity = 1;
+          heroTitle.style.transform = 'translateY(0)';
+          heroTitle2.style.opacity = 0;
+          heroTitle2.style.transform = 'translateY(60px)';
+          // Reset background to dark (fully visible dark, fully hidden bright)
+          heroBgDark.style.opacity = 1;
+          heroBgBright.style.opacity = 0;
+        } else {
+          // During scroll animation
+          var animationProgress = Math.max(0, Math.min(1, (scrollProgress - animationStart) / (animationEnd - animationStart)));
+          
+          // Title 1: reduce opacity to 0.05 on scroll down, back to 1.0 on scroll up
+          var title1Opacity = 1 - (animationProgress * 0.95);
+          heroTitle.style.opacity = title1Opacity;
+          heroTitle.style.transform = 'translateY(0)';
+          
+          // Title 2: reveal on scroll down, hide on scroll up - fade in/out and slide up/down
+          var title2Opacity = animationProgress;
+          var title2TranslateY = (1 - animationProgress) * 100;
+          heroTitle2.style.opacity = title2Opacity;
+          heroTitle2.style.transform = `translateY(${title2TranslateY}px)`;
+          
+          // Smooth crossfade between dark and bright backgrounds based on scroll progress
+          // Dark fades out (1 -> 0), Bright fades in (0 -> 1) as animationProgress increases
+          heroBgDark.style.opacity = 1 - animationProgress;
+          heroBgBright.style.opacity = animationProgress;
+        }
+      } else {
+        // Reset when hero is far out of view
+        if (heroRect.bottom < -viewportHeight) {
+          // Scrolled past hero - title 1 at 0.05 opacity, title 2 fully visible, bright background
+          heroTitle.style.opacity = 0.05;
+          heroTitle.style.transform = 'translateY(0)';
+          heroTitle2.style.opacity = 1;
+          heroTitle2.style.transform = 'translateY(0)';
+          heroBgDark.style.opacity = 0;
+          heroBgBright.style.opacity = 1;
+        } else {
+          // Before hero or scrolled back to top - show title 1 at full opacity only, dark background
+          heroTitle.style.opacity = 1;
+          heroTitle.style.transform = 'translateY(0)';
+          heroTitle2.style.opacity = 0;
+          heroTitle2.style.transform = 'translateY(100px)';
+          heroBgDark.style.opacity = 1;
+          heroBgBright.style.opacity = 0;
+        }
+      }
+      
+      lastScrollY = scrollY;
+      heroTitleTicking = false;
+    }
+    
+    function onScrollHeroTitle(ev) {
+      if (!heroTitleTicking) {
+        requestAnimationFrame(function () {
+          var scrollY = typeof ev === 'number' ? ev : (ev && typeof ev.scroll === 'number' ? ev.scroll : getScrollY());
+          updateHeroTitleAnimation(scrollY);
+        });
+        heroTitleTicking = true;
+      }
+    }
+    
+    if (lenis) {
+      lenis.on('scroll', onScrollHeroTitle);
+    } else {
+      window.addEventListener('scroll', onScrollHeroTitle, { passive: true });
+    }
+    // Don't call updateHeroTitleAnimation on load - keep title-2 hidden until scroll
   }
 
   /* Butterfly: move from stone toward right as user scrolls through sections */
@@ -244,7 +310,6 @@
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
             document.body.classList.add('in-footer');
-            if (ctaFixed) document.body.classList.remove('cta-visible');
           } else {
             document.body.classList.remove('in-footer');
           }
