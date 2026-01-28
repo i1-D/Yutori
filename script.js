@@ -161,6 +161,25 @@
     updateButterflyPosition();
   }
 
+  /* Footer in view: hide decoration (fade), header (slide up), CTA (same as scroll-up hide) */
+  var footer = document.querySelector('.footer');
+  if (footer && 'IntersectionObserver' in window) {
+    var footerObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            document.body.classList.add('in-footer');
+            if (ctaFixed) document.body.classList.remove('cta-visible');
+          } else {
+            document.body.classList.remove('in-footer');
+          }
+        });
+      },
+      { rootMargin: '0px 0px 0px 0px', threshold: 0.1 }
+    );
+    footerObserver.observe(footer);
+  }
+
   /* Section & footer scroll-in: smooth ease-out reveal (Kasia Siwosz–style) */
   var scrollRevealEls = document.querySelectorAll('.section, .footer');
   if (scrollRevealEls.length && 'IntersectionObserver' in window) {

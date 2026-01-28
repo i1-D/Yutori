@@ -91,6 +91,14 @@ img, svg {
   inset: 0;
   pointer-events: none;
   z-index: 5;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+body.in-footer .decoration {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0s linear 0.5s;
 }
 
 .decoration__butterfly {
@@ -98,7 +106,7 @@ img, svg {
   /* Start: next to stone (rope-connected); end: top-right of viewport */
   /* Stone is at left 4vw, bottom 8vh, width 20.833vw (~24.8vw right edge); butterfly starts just right of it */
   left: calc(2vw + var(--butterfly-progress, 0) * 70vw);
-  bottom: calc(34vh + var(--butterfly-progress, 0) * 20vh);
+  bottom: calc(34vh + var(--butterfly-progress, 0) * 40vh);
   width: 20.833vw;
   height: auto;
   transform-origin: center center;
@@ -129,7 +137,11 @@ img, svg {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: var(--space-24) var(--space-40);
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: background 0.3s ease, color 0.3s ease, transform 0.4s ease;
+}
+
+body.in-footer .header {
+  transform: translateY(-100%);
 }
 
 /* Dark mode: hero – transparent background, white text */
@@ -355,6 +367,13 @@ body.cta-visible .hero .btn.cta-fixed {
   opacity: 1;
   transform: translateX(0);
   pointer-events: auto;
+}
+
+/* In footer: hide CTA with same slide-out effect as scrolling up */
+body.in-footer .hero .btn.cta-fixed {
+  opacity: 0;
+  transform: translateX(calc(100% + 48px));
+  pointer-events: none;
 }
 
 /* ----- Buttons ----- */
