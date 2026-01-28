@@ -132,6 +132,35 @@
     }
   }
 
+  /* Butterfly: move from stone toward right as user scrolls through sections */
+  var decoration = document.querySelector('.decoration');
+  if (decoration) {
+    var butterflyTicking = false;
+    function updateButterflyPosition(scrollY) {
+      if (scrollY == null) scrollY = window.scrollY;
+      var maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      var progress = maxScroll > 0 ? Math.min(1, scrollY / maxScroll) : 0;
+      decoration.style.setProperty('--butterfly-progress', String(progress));
+      butterflyTicking = false;
+    }
+    function onScrollButterfly(ev) {
+      if (!butterflyTicking) {
+        requestAnimationFrame(function () {
+          var scrollY = typeof ev === 'number' ? ev : (ev && typeof ev.scroll === 'number' ? ev.scroll : window.scrollY);
+          updateButterflyPosition(scrollY);
+        });
+        butterflyTicking = true;
+      }
+    }
+    if (lenis) {
+      lenis.on('scroll', onScrollButterfly);
+    } else {
+      window.addEventListener('scroll', onScrollButterfly, { passive: true });
+    }
+    window.addEventListener('resize', function () { updateButterflyPosition(); });
+    updateButterflyPosition();
+  }
+
   /* Section & footer scroll-in: smooth ease-out reveal (Kasia Siwosz–style) */
   var scrollRevealEls = document.querySelectorAll('.section, .footer');
   if (scrollRevealEls.length && 'IntersectionObserver' in window) {

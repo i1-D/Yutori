@@ -85,6 +85,39 @@ img, svg {
   max-width: 100%;
 }
 
+/* ----- Decoration (fixed on scroll) ----- */
+.decoration {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.decoration__butterfly {
+  position: absolute;
+  /* Start: next to stone (rope-connected); end: top-right of viewport */
+  /* Stone is at left 4vw, bottom 8vh, width 20.833vw (~24.8vw right edge); butterfly starts just right of it */
+  left: calc(2vw + var(--butterfly-progress, 0) * 70vw);
+  bottom: calc(34vh + var(--butterfly-progress, 0) * 20vh);
+  width: 20.833vw;
+  height: auto;
+  transform-origin: center center;
+  transition: left 0.35s ease-out, bottom 0.35s ease-out;
+}
+
+.decoration__stone {
+  position: absolute;
+  left: min(4vw, 40px);
+  bottom: min(8vh, 80px);
+  width: 20.833vw;
+  height: auto;
+}
+
+@keyframes flutter {
+  from { transform: rotateX(0); }
+  to { transform: rotateX(80deg); }
+}
+
 /* ----- Header ----- */
 .header {
   position: fixed;
@@ -236,7 +269,7 @@ img, svg {
   inset: 0;
   z-index: 0;
   background-color: #08090c;
-  background-image: url('images/hero-bg.png');
+  background-image: url('images/hero-dark.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -252,10 +285,10 @@ img, svg {
 
 @keyframes hero-bg-transform {
   0%, 100% {
-    transform: translateX(0) scale(1.2);
+    transform: translateX(0) translateY(0px) scale(1.2);
   }
   50% {
-    transform: translateX(50px) scale(1.2);
+    transform: translateX(50px) translateY(25px) scale(1.2);
   }
 }
 
@@ -278,7 +311,7 @@ img, svg {
   margin: 0 0 var(--space-48);
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  gap: var(--space-32);
 }
 
 .hero-title span {

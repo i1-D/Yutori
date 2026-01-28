@@ -1,0 +1,12 @@
+{
+  "name": "yutori",
+  "version": "1.0.0",
+  "description": "Yutori - static site",
+  "scripts": {
+    "start": "live-server . --open=/",
+    "dev": "live-server . --open=/"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
