@@ -647,7 +647,7 @@ a.btn {
   line-height: var(--text-legal-height);
   color: var(--color-text-muted);
   margin: 0;
-  max-width: 42ch;
+  width: 70%;
 }
 
 .footer-links a {
