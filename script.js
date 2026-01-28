@@ -18,6 +18,8 @@
       smoothWheel: true,
       touchMultiplier: 2
     });
+    /* Start stopped so first scroll only triggers hero title animation; lenis.start() after first scroll */
+    if (lenis.stop) lenis.stop();
     function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -96,6 +98,79 @@
     window.addEventListener('resize', onScroll);
     updateHeaderMode();
   }
+
+  /* Hero titles: first scroll down only triggers animation (no page scroll); from second scroll onwards, page scrolls normally */
+  var heroTitlesThreshold = 60;
+  var firstScrollConsumed = false;
+  var heroTitlesTicking = false;
+
+  function getScrollY() {
+    return lenis && typeof lenis.scroll === 'number' ? lenis.scroll : window.scrollY;
+  }
+
+  function updateHeroTitles(scrollY) {
+    if (scrollY == null) scrollY = getScrollY();
+    if (scrollY > heroTitlesThreshold) {
+      document.body.classList.add('hero-titles-scrolled');
+    } else {
+      document.body.classList.remove('hero-titles-scrolled');
+    }
+    heroTitlesTicking = false;
+  }
+
+  function onScrollHeroTitles(ev) {
+    if (!heroTitlesTicking) {
+      requestAnimationFrame(function () {
+        var scrollY = typeof ev === 'number' ? ev : (ev && typeof ev.scroll === 'number' ? ev.scroll : getScrollY());
+        updateHeroTitles(scrollY);
+      });
+      heroTitlesTicking = true;
+    }
+  }
+
+  if (lenis) {
+    lenis.on('scroll', onScrollHeroTitles);
+  } else {
+    window.addEventListener('scroll', onScrollHeroTitles, { passive: true });
+  }
+  updateHeroTitles();
+
+  /* Consume first scroll down at top of page: only run hero title animation, no actual scroll */
+  function onFirstWheel(e) {
+    if (firstScrollConsumed) return;
+    var scrollY = getScrollY();
+    if (scrollY > 5) return;
+    if (e.deltaY <= 0) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    firstScrollConsumed = true;
+    document.body.classList.add('hero-titles-scrolled');
+    if (lenis && lenis.start) lenis.start();
+    window.removeEventListener('wheel', onFirstWheel, { capture: true });
+    document.removeEventListener('touchmove', onFirstTouchMove, { capture: true, passive: false });
+  }
+
+  var touchStartY = 0;
+  function onFirstTouchMove(e) {
+    if (firstScrollConsumed) return;
+    var scrollY = getScrollY();
+    if (scrollY > 5) return;
+    var y = e.touches && e.touches[0] ? e.touches[0].clientY : e.clientY;
+    if (y >= touchStartY) return;
+    e.preventDefault();
+    firstScrollConsumed = true;
+    document.body.classList.add('hero-titles-scrolled');
+    if (lenis && lenis.start) lenis.start();
+    window.removeEventListener('wheel', onFirstWheel, { capture: true });
+    document.removeEventListener('touchmove', onFirstTouchMove, { capture: true, passive: false });
+  }
+
+  document.addEventListener('touchstart', function (e) {
+    touchStartY = e.touches && e.touches[0] ? e.touches[0].clientY : e.clientY;
+  }, { passive: true });
+
+  window.addEventListener('wheel', onFirstWheel, { passive: false, capture: true });
+  document.addEventListener('touchmove', onFirstTouchMove, { passive: false, capture: true });
 
   /* CTA fixed: slide in from right on first scroll down, slide out when scrolling up */
   if (ctaFixed) {

@@ -312,7 +312,7 @@ body.in-footer .header {
   margin: 0 auto;
 }
 
-.hero-title {
+.hero-title, .hero-title-2 {
   font-family: var(--font-heading);
   font-size: var(--text-hero-size);
   font-weight: 600;
@@ -324,22 +324,44 @@ body.in-footer .header {
   display: flex;
   flex-direction: column;
   gap: var(--space-32);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.hero-title span {
+/* Initial: title 1 visible; title 2 hidden below. On scroll: title 1 up + fade, title 2 slide up into view */
+.hero-title {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.hero-title-2 {
+  opacity: 0;
+  transform: translateY(48px);
+  margin-top: calc(-1 * var(--space-48));
+}
+
+body.hero-titles-scrolled .hero-title {
+  transform: translateY(-48px);
+  opacity: 0.12;
+}
+
+body.hero-titles-scrolled .hero-title-2 {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero-title span, .hero-title-2 span {
   text-align: center;
+  width: 100%;
 }
 
 .hero-title span:first-child {
-  font-size: 90px;
+  font-size: 4.688vw;
   font-weight: 300;
-  width: 100%;
 }
 
-.hero-title span:last-child {
-  font-size: 120px;
+.hero-title span:last-child, .hero-title-2 span {
+  font-size: 6.25vw;
   font-weight: 400;
-  width: 100%;
 }
 
 .hero .btn.cta-fixed {
