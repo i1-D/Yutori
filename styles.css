@@ -492,6 +492,14 @@ a.btn {
   margin: 0;
   position: relative;
   display: inline-block;
+  transform: translateY(60px);
+  opacity: 0;
+  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1), opacity 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.section.is-in-view .section-heading {
+  transform: translateY(0);
+  opacity: 1;
 }
 
 /* Blurred Thinking ----- */
@@ -585,6 +593,7 @@ a.btn {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-56);
+  justify-content: space-between;
 }
 
 .footer-col {
@@ -593,8 +602,21 @@ a.btn {
 }
 
 .footer-col--consultation {
-  flex: 1.5 1 0;
-  width: 100%;
+  flex: 0 1 auto;
+  max-width: calc(50% - var(--space-56) / 2);
+}
+
+.footer-col--right {
+  flex: 0 1 auto;
+  display: flex;
+  gap: var(--space-80);
+  max-width: calc(50% - var(--space-56) / 2);
+  text-align: right;
+}
+
+.footer-col--right .footer-col {
+  flex: 0 1 auto;
+  text-align: right;
 }
 
 .footer-heading {
@@ -624,7 +646,7 @@ a.btn {
 
 .footer-links a {
   display: inline-block;
-  font-size: 16px;
+  font-size: 20px;
   line-height: var(--text-foot-height);
   color: var(--color-text);
   padding: var(--space-4) 0;
@@ -645,6 +667,14 @@ a.btn {
   text-align: center;
   margin: 0;
   letter-spacing: 0.03em;
+  transform: translateY(60px);
+  opacity: 0;
+  transition: transform 1.8s cubic-bezier(0.22, 1, 0.36, 1), opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.footer.is-in-view .footer-signature {
+  transform: translateY(0);
+  opacity: 1;
 }
 
 /* ----- Nav overlay (mobile menu) ----- */
@@ -695,13 +725,15 @@ a.btn {
     flex-wrap: wrap;
   }
 
-  .footer-col,
   .footer-col--consultation {
-    flex: 1 1 calc(50% - var(--space-56) / 2);
+    max-width: 100%;
+    flex: 1 1 100%;
   }
 
-  .footer-col--consultation {
+  .footer-col--right {
+    max-width: 100%;
     flex: 1 1 100%;
+    flex-direction: row;
   }
 }
 
@@ -744,8 +776,18 @@ a.btn {
     gap: var(--space-32);
   }
 
-  .footer-col,
   .footer-col--consultation {
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .footer-col--right {
+    max-width: 100%;
+    flex: 1 1 100%;
+    flex-direction: column;
+  }
+
+  .footer-col--right .footer-col {
     flex: 1 1 100%;
   }
 
