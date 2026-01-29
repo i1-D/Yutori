@@ -13,23 +13,21 @@
   const ctaFloating = document.querySelector('.cta-floating');
   const sections = document.querySelectorAll('.section');
 
-  /* Lenis smooth scrolling – applies to full page (hero, all sections, footer) */
+  /* Lenis smooth scrolling – glide slowly to stop (duration + ease-out) */
   var lenis;
   if (typeof Lenis !== 'undefined') {
     lenis = new Lenis({
-      duration: 1.2,
-      easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+      duration: 1.8,
+      easing: function (t) { return 1 - Math.pow(1 - t, 4); },
+      wheelMultiplier: 0.9,
+      touchMultiplier: 1.2,
       orientation: 'vertical',
-      smoothWheel: true,
-      touchMultiplier: 2
+      smoothWheel: true
     });
-    function raf(time) {
+    (function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
-    
-    /* Start Lenis smooth scrolling immediately */
+    })(0);
     if (lenis.start) lenis.start();
 
     /* Recalculate scrollable height so footer and all sections are included */
@@ -51,7 +49,7 @@
         var target = document.querySelector(hash);
         if (target && lenis) {
           e.preventDefault();
-          lenis.scrollTo(target, { offset: 0, duration: 1.2 });
+          lenis.scrollTo(target, { offset: 0, duration: 2 });
         }
       });
     });
