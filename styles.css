@@ -113,7 +113,6 @@ img, svg {
   inset: 0;
   pointer-events: none;
   z-index: 5;
-  opacity: 1;
   transition: opacity 0.5s ease;
 }
 
@@ -351,7 +350,6 @@ body.nav-open .header .menu-toggle span {
   background-color: #08090c;
   background-image: url('images/hero-dark.jpg');
   opacity: 1;
-  z-index: 0;
   filter: grayscale(1);
 }
 
@@ -359,7 +357,6 @@ body.nav-open .header .menu-toggle span {
   background-color: #08090c;
   background-image: url('images/hero-bright.png');
   opacity: 0;
-  z-index: 0;
   filter: blur(4px);
 }
 
@@ -438,8 +435,6 @@ body.nav-open .header .menu-toggle span {
   text-transform: uppercase;
   color: #6a6a6a;
 }
-
-
 
 .hero-title span, .hero-title-2 span {
   font-size: 6.25vw;
@@ -658,7 +653,7 @@ a.btn {
   display: flex;
   flex-direction: column;
   background: #fff;
-  padding: 120px 60px 120px 60px;
+  padding: 120px 60px;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   opacity: 0;
   transform: translateY(48px);
@@ -861,7 +856,7 @@ a.btn {
 /* ----- Responsive ----- */
 @media (max-width: 900px) {
   .blurred-cols {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 
   .footer-grid {

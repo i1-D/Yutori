@@ -11,7 +11,6 @@
   const heroTitle = document.querySelector('.hero-title');
   const heroTitle2 = document.querySelector('.hero-title-2');
   const ctaFloating = document.querySelector('.cta-floating');
-  const sections = document.querySelectorAll('.section');
 
   /* Lenis smooth scrolling – glide slowly to stop (duration + ease-out) */
   var lenis;
@@ -76,14 +75,13 @@
   }
 
   /* Header: dark mode in hero (transparent + white), light mode elsewhere (white bg + black) */
-  const heroSection = document.querySelector('.hero');
-  if (header && heroSection) {
+  if (header && hero) {
     const headerHeight = 124;
     let ticking = false;
 
     function updateHeaderMode() {
       const y = headerHeight / 2;
-      const r = heroSection.getBoundingClientRect();
+      const r = hero.getBoundingClientRect();
       const isDark = r.top <= y && r.bottom > y;
       header.setAttribute('data-mode', isDark ? 'dark' : 'light');
       ticking = false;
@@ -176,8 +174,7 @@
   /* Also changes background from hero-dark to hero-bright on scroll */
   if (hero && heroTitle && heroTitle2 && heroBgDark && heroBgBright) {
     var heroTitleTicking = false;
-    var lastScrollY = 0;
-    
+
     // Set initial state - title-2 hidden, background dark
     heroTitle2.style.opacity = '0';
     heroTitle2.style.transform = 'translateY(100px)';
@@ -251,8 +248,7 @@
           heroBgBright.style.opacity = 0;
         }
       }
-      
-      lastScrollY = scrollY;
+
       heroTitleTicking = false;
     }
     
