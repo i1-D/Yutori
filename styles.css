@@ -116,7 +116,7 @@ body.in-footer .decoration {
 .decoration__stone {
   position: absolute;
   left: min(4vw, 40px);
-  bottom: min(8vh, 80px);
+  bottom: min(-2vh, 80px);
   width: 20.833vw;
   height: auto;
 }
@@ -299,7 +299,7 @@ body.in-footer .header {
 
 .hero-bg--bright {
   background-color: #08090c;
-  background-image: url('images/hero-bright.jpg');
+  background-image: url('images/hero-bright.png');
   opacity: 0;
   z-index: 0;
   filter: blur(4px);
@@ -376,16 +376,12 @@ body.in-footer .header {
   margin-bottom: var(--space-48);
 }
 
-.hero-title-2 span:first-child {
-  font-size: 4.688vw;
-  font-weight: 300;
+.hero-title-2 span {
   text-transform: uppercase;
+  color: #6a6a6a;
 }
 
-.hero-title-2 span:last-child {
-  font-size: 6.25vw;
-  font-weight: 400;
-}
+
 
 .hero-title span, .hero-title-2 span {
   font-size: 6.25vw;
