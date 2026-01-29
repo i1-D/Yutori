@@ -10,6 +10,7 @@
   const heroContent = document.querySelector('.hero-content');
   const heroTitle = document.querySelector('.hero-title');
   const heroTitle2 = document.querySelector('.hero-title-2');
+  const ctaFloating = document.querySelector('.cta-floating');
   const sections = document.querySelectorAll('.section');
 
   /* Lenis smooth scrolling – applies to full page (hero, all sections, footer) */
@@ -302,7 +303,7 @@
     updateButterflyPosition();
   }
 
-  /* Footer in view: hide decoration (fade), header (slide up), CTA (same as scroll-up hide) */
+  /* Footer in view: hide decoration (fade), header (slide up), CTA (slide out) */
   var footer = document.querySelector('.footer');
   if (footer && 'IntersectionObserver' in window) {
     var footerObserver = new IntersectionObserver(
@@ -310,8 +311,12 @@
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
             document.body.classList.add('in-footer');
+            if (ctaFloating) ctaFloating.classList.remove('cta-floating--visible');
           } else {
             document.body.classList.remove('in-footer');
+            if (ctaFloating && getScrollY() > 120) {
+              ctaFloating.classList.add('cta-floating--visible');
+            }
           }
         });
       },
@@ -320,7 +325,40 @@
     footerObserver.observe(footer);
   }
 
-  /* Section & footer scroll-in: smooth ease-out reveal (Kasia Siwosz–style) */
+  /* Floating CTA: hidden on load, slide in on first scroll, slide out in footer */
+  if (ctaFloating) {
+    var scrollThreshold = 120;
+    var ticking = false;
+
+    function updateCtaFloating() {
+      var scrollY = getScrollY();
+      var inFooter = document.body.classList.contains('in-footer');
+
+      if (inFooter) {
+        ctaFloating.classList.remove('cta-floating--visible');
+      } else if (scrollY > scrollThreshold) {
+        ctaFloating.classList.add('cta-floating--visible');
+      } else {
+        ctaFloating.classList.remove('cta-floating--visible');
+      }
+      ticking = false;
+    }
+
+    function onScrollCta() {
+      if (!ticking) {
+        requestAnimationFrame(updateCtaFloating);
+        ticking = true;
+      }
+    }
+
+    if (lenis) {
+      lenis.on('scroll', onScrollCta);
+    } else {
+      window.addEventListener('scroll', onScrollCta, { passive: true });
+    }
+  }
+
+  /* Section & footer scroll-in: smooth ease-out reveal, re-trigger every time section enters view */
   var scrollRevealEls = document.querySelectorAll('.section, .footer');
   if (scrollRevealEls.length && 'IntersectionObserver' in window) {
     var scrollRevealObserver = new IntersectionObserver(
@@ -328,6 +366,8 @@
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
             entry.target.classList.add('is-in-view');
+          } else {
+            entry.target.classList.remove('is-in-view');
           }
         });
       },
