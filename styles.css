@@ -192,6 +192,42 @@ body.in-footer .header {
   display: block;
   line-height: 0;
   justify-self: start;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Hide header logo when nav overlay is expanded */
+body.nav-open .header .logo {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Hide Coaching link when nav overlay is expanded */
+body.nav-open .header .nav .nav-link[href="#coaching"] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Force header to dark mode when nav overlay is open */
+body.nav-open .header {
+  background: transparent;
+}
+
+body.nav-open .header .nav-link {
+  color: #fff;
+}
+
+body.nav-open .header .menu-toggle {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+body.nav-open .header .menu-toggle:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+body.nav-open .header .menu-toggle span {
+  background: #fff;
 }
 
 .logo-img {
@@ -401,7 +437,7 @@ body.in-footer .header {
   position: fixed;
   bottom: 32px;
   right: 32px;
-  z-index: 100;
+  z-index: 98;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -721,7 +757,7 @@ a.btn {
   opacity: 1;
 }
 
-/* ----- Nav overlay (mobile menu) ----- */
+/* ----- Nav overlay (mobile menu) – opens from top, staggered link animation ----- */
 .nav-overlay {
   position: fixed;
   inset: 0;
@@ -729,16 +765,41 @@ a.btn {
   background: rgba(26, 26, 29, 1);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
+  padding-left: var(--space-40);
   padding-right: var(--space-120);
-  opacity: 0;
+  transform: translateY(-100%);
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .nav-overlay.is-open {
-  opacity: 1;
+  transform: translateY(0);
   visibility: visible;
+}
+
+.nav-overlay-logo {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  align-self: center;
+  line-height: 0;
+  text-decoration: none;
+  opacity: 0;
+  transform: translateX(-24px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+}
+
+.nav-overlay.is-open .nav-overlay-logo {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.nav-overlay-logo-img {
+  height: 400px;
+  width: auto;
+  max-width: none;
+  object-fit: contain;
 }
 
 .nav-overlay-menu {
@@ -754,7 +815,21 @@ a.btn {
   font-weight: 500;
   color: #fff;
   text-align: right;
-  transition: opacity 0.2s ease;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Staggered delay only when opening – links animate in one by one */
+.nav-overlay.is-open .nav-overlay-menu a:nth-child(1) { transition-delay: 0.08s; }
+.nav-overlay.is-open .nav-overlay-menu a:nth-child(2) { transition-delay: 0.14s; }
+.nav-overlay.is-open .nav-overlay-menu a:nth-child(3) { transition-delay: 0.2s; }
+.nav-overlay.is-open .nav-overlay-menu a:nth-child(4) { transition-delay: 0.26s; }
+.nav-overlay.is-open .nav-overlay-menu a:nth-child(5) { transition-delay: 0.32s; }
+
+.nav-overlay.is-open .nav-overlay-menu a {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .nav-overlay-menu a:hover {

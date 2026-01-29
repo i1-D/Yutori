@@ -60,6 +60,7 @@
   if (menuToggle && navOverlay) {
     menuToggle.addEventListener('click', function () {
       const isOpen = navOverlay.classList.toggle('is-open');
+      document.body.classList.toggle('nav-open', isOpen);
       menuToggle.setAttribute('aria-expanded', isOpen);
       menuToggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
       document.body.style.overflow = isOpen ? 'hidden' : '';
@@ -68,6 +69,7 @@
     navOverlay.querySelectorAll('a').forEach(function (link) {
       link.addEventListener('click', function () {
         navOverlay.classList.remove('is-open');
+        document.body.classList.remove('nav-open');
         menuToggle.setAttribute('aria-expanded', 'false');
         menuToggle.setAttribute('aria-label', 'Open menu');
         document.body.style.overflow = '';
