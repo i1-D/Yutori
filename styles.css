@@ -1445,17 +1445,18 @@ a.btn {
   }
 
   .hero-title span:first-child, .hero-title span:nth-child(2) {
-    font-size: clamp(1.125rem, 8vw, 12vw);
+    font-size: clamp(1.125rem, 11vw, 14vw);
     line-height: 120%;
+    font-weight: 400;
   }
 
   .section {
-    padding: var(--space-40) var(--space-12);
-    gap: 40px;
+    padding: var(--space-80) var(--space-24);
+    gap: var(--space-40);
   }
 
   .section-heading {
-    font-size: clamp(24px, 6.5vw, 36px);
+    font-size: clamp(32px, 10vw, 48px);
   }
 
   .blurred-cols {
@@ -1466,11 +1467,14 @@ a.btn {
 
   .space-paragraph {
     padding-left: var(--space-12);
-    font-size: clamp(0.9375rem, 4vw, 1.125rem);
+    font-size: clamp(1rem, 1.6rem, 2rem);
+    gap: 0 0.3em;
+    line-height: 1.4;
+    letter-spacing: 0.2px;
   }
 
   .footer {
-    padding: 40px var(--space-12);
+    padding: var(--space-80) var(--space-24);
   }
 
   .footer-grid {
@@ -1482,6 +1486,7 @@ a.btn {
     flex-direction: row;
     gap: var(--space-24);
     text-align: left;
+    justify-content: space-between;
   }
 
   .footer-col--right .footer-col {
@@ -1505,7 +1510,7 @@ a.btn {
   }
 
   .footer-signature {
-    font-size: clamp(40px, 12vw, 56px);
+    font-size: clamp(40px, 16vw, 72px);
   }
 
   .nav-overlay {
