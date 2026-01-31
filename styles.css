@@ -415,6 +415,7 @@ body.nav-open .header .menu-toggle span {
   will-change: opacity, transform;
   pointer-events: none;
   margin-bottom: var(--space-32);
+  text-transform: capitalize;
 }
 
 .hero-title-2 {
