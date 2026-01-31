@@ -356,7 +356,6 @@ body.nav-open .header .menu-toggle span {
   background-color: #08090c;
   background-image: url('images/hero-bright.png');
   opacity: 0;
-  filter: blur(4px);
 }
 
 @keyframes hero-bg-drift {
@@ -1371,6 +1370,7 @@ a.btn {
   .header {
     padding: var(--space-8) var(--space-12);
     grid-template-columns: 1fr auto 1fr;
+    align-items: end;
   }
 
   .header .logo {
