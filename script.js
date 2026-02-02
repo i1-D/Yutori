@@ -172,83 +172,14 @@
 
   /* Hero title scroll animation: reveal title-2 on scroll, reverse on scroll up */
   /* Also changes background from hero-dark to hero-bright on scroll */
-  /* First scroll phase: page does not scroll – only title and background change. From second scroll, page scrolls. */
   if (hero && heroTitle && heroTitle2 && heroBgDark && heroBgBright) {
     var heroTitleTicking = false;
-    var heroPhaseComplete = false;
-    var heroProgress = 0;
-    var HERO_PROGRESS_SENSITIVITY = 0.0018;
 
     // Set initial state - title-2 hidden, background dark
     heroTitle2.style.opacity = '0';
     heroTitle2.style.transform = 'translateY(100px)';
     heroBgDark.style.opacity = 1;
     heroBgBright.style.opacity = 0;
-
-    function updateHeroStateFromProgress(p) {
-      p = Math.max(0, Math.min(1, p));
-      var title1Opacity = 1 - (p * 0.95);
-      heroTitle.style.opacity = title1Opacity;
-      heroTitle.style.transform = 'translateY(0)';
-      heroTitle2.style.opacity = p;
-      heroTitle2.style.transform = 'translateY(' + ((1 - p) * 100) + 'px)';
-      heroBgDark.style.opacity = 1 - p;
-      heroBgBright.style.opacity = p;
-    }
-
-    function onHeroWheel(ev) {
-      var scrollY = getScrollY();
-      if (heroPhaseComplete || scrollY > 0) return;
-      ev.preventDefault();
-      ev.stopPropagation();
-      heroProgress += ev.deltaY * HERO_PROGRESS_SENSITIVITY;
-      heroProgress = Math.max(0, Math.min(1, heroProgress));
-      updateHeroStateFromProgress(heroProgress);
-      if (heroProgress >= 1) {
-        heroPhaseComplete = true;
-        var vh = window.innerHeight;
-        var heroTop = hero.offsetTop;
-        var heroHeight = hero.offsetHeight;
-        var endScrollY = 0.6 * (heroHeight + vh) - vh + heroTop;
-        endScrollY = Math.max(0, endScrollY);
-        if (lenis && lenis.scrollTo) {
-          lenis.scrollTo(endScrollY, { duration: 0.5, immediate: false });
-        } else {
-          window.scrollTo(0, endScrollY);
-        }
-      }
-    }
-
-    document.addEventListener('wheel', onHeroWheel, { capture: true, passive: false });
-
-    var heroTouchStartY = 0;
-    function onHeroTouchStart(ev) {
-      if (getScrollY() === 0 && !heroPhaseComplete) heroTouchStartY = ev.touches[0].clientY;
-    }
-    function onHeroTouchMove(ev) {
-      if (heroPhaseComplete || getScrollY() > 0) return;
-      ev.preventDefault();
-      var dy = heroTouchStartY - ev.touches[0].clientY;
-      heroTouchStartY = ev.touches[0].clientY;
-      heroProgress += dy * (HERO_PROGRESS_SENSITIVITY * 2);
-      heroProgress = Math.max(0, Math.min(1, heroProgress));
-      updateHeroStateFromProgress(heroProgress);
-      if (heroProgress >= 1) {
-        heroPhaseComplete = true;
-        var vh = window.innerHeight;
-        var heroTop = hero.offsetTop;
-        var heroHeight = hero.offsetHeight;
-        var endScrollY = 0.6 * (heroHeight + vh) - vh + heroTop;
-        endScrollY = Math.max(0, endScrollY);
-        if (lenis && lenis.scrollTo) {
-          lenis.scrollTo(endScrollY, { duration: 0.5, immediate: false });
-        } else {
-          window.scrollTo(0, endScrollY);
-        }
-      }
-    }
-    document.addEventListener('touchstart', onHeroTouchStart, { passive: true });
-    document.addEventListener('touchmove', onHeroTouchMove, { passive: false });
     
     function updateHeroTitleAnimation(scrollY) {
       if (scrollY == null) scrollY = getScrollY();
@@ -258,23 +189,11 @@
       var heroHeight = hero.offsetHeight;
       var viewportHeight = window.innerHeight;
       
-      // After first-scroll phase: when user scrolls back to top, show initial state
-      if (heroPhaseComplete && scrollY <= 0) {
-        heroTitle.style.opacity = 1;
-        heroTitle.style.transform = 'translateY(0)';
-        heroTitle2.style.opacity = 0;
-        heroTitle2.style.transform = 'translateY(100px)';
-        heroBgDark.style.opacity = 1;
-        heroBgBright.style.opacity = 0;
-        heroTitleTicking = false;
-        return;
-      }
-      
       // Calculate scroll progress through hero section (0 = top of hero, 1 = bottom)
       var scrollProgress = Math.max(0, Math.min(1, (scrollY - heroTop + viewportHeight) / (heroHeight + viewportHeight)));
       // Narrow band 0.5–0.6 so scrolling back up (title 2 → title 1) completes in one scroll
-      var scrollDownEnd = 0.6;
-      var scrollUpEnd = 0.5;   // below this = title 1 when scrolling back up
+      var scrollUpEnd = 0.5;   // below this = title 1
+      var scrollDownEnd = 0.6; // above this = title 2
       
       var isAtTop = scrollProgress < scrollUpEnd || scrollY <= heroTop;
       
@@ -290,7 +209,7 @@
           heroBgDark.style.opacity = 1;
           heroBgBright.style.opacity = 0;
         } else {
-          // Transition zone: scrollProgress 0.5–0.6 so one scroll up returns to title 1
+          // Transition zone 0.5–0.6: one scroll up returns to title 1
           var animationProgress = scrollProgress <= scrollUpEnd ? 0 : Math.min(1, (scrollProgress - scrollUpEnd) / (scrollDownEnd - scrollUpEnd));
           
           // Title 1: reduce opacity to 0.05 on scroll down, back to 1.0 on scroll up
@@ -348,7 +267,8 @@
     } else {
       window.addEventListener('scroll', onScrollHeroTitle, { passive: true });
     }
-    // Don't call updateHeroTitleAnimation on load - keep title-2 hidden until scroll
+    // Initial run: correct state at load and when scrolling back to top
+    updateHeroTitleAnimation(getScrollY());
   }
 
   /* Butterfly: move from stone toward right as user scrolls through sections */
