@@ -1663,3 +1663,22 @@ a.btn {
     font-size: 14px;
   }
 }
+
+/* ----- 2560px and up: cap fonts and spacing to 1920px-equivalent (no layout max-width) ----- */
+@media (min-width: 2560px) {
+  :root {
+    --text-hero-size: 4.25rem;
+    --text-h2-size: 2.75rem;
+    --text-lead-size: 1.375rem;
+  }
+
+  .hero-title span,
+  .hero-title-2 span {
+    font-size: 7.5rem;
+  }
+
+  .hero-title span:first-child,
+  .hero-title span:nth-child(2) {
+    font-size: 5.625rem;
+  }
+}
