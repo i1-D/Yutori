@@ -328,10 +328,12 @@
     footerObserver.observe(footer);
   }
 
-  /* Floating CTA: hidden on load, slide in on first scroll, slide out in footer */
+  /* Floating CTA: hidden on load, slide in on first scroll, slide out in footer; light mode over section everyone / spacious */
   if (ctaFloating) {
     var scrollThreshold = 120;
     var ticking = false;
+    var sectionSpacious = document.querySelector('.section--spacious');
+    var sectionEveryone = document.querySelector('.section--everyone');
 
     function updateCtaFloating() {
       var scrollY = getScrollY();
@@ -344,6 +346,24 @@
       } else {
         ctaFloating.classList.remove('cta-floating--visible');
       }
+
+      /* Light mode only when viewport center is inside section everyone or spacious (dark bg); dark mode in aligned, blurred, hero, etc. */
+      var inDarkBgSection = false;
+      if (sectionSpacious || sectionEveryone) {
+        var vh = window.innerHeight;
+        var viewportCenterY = vh / 2;
+        [sectionSpacious, sectionEveryone].forEach(function (section) {
+          if (!section) return;
+          var r = section.getBoundingClientRect();
+          if (r.top <= viewportCenterY && r.bottom > viewportCenterY) inDarkBgSection = true;
+        });
+      }
+      if (inDarkBgSection) {
+        ctaFloating.classList.add('cta-floating--light');
+      } else {
+        ctaFloating.classList.remove('cta-floating--light');
+      }
+
       ticking = false;
     }
 
@@ -359,6 +379,7 @@
     } else {
       window.addEventListener('scroll', onScrollCta, { passive: true });
     }
+    updateCtaFloating();
   }
 
   /* Section & footer scroll-in: smooth ease-out reveal, re-trigger every time section enters view */

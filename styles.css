@@ -45,6 +45,22 @@
   --text-legal-height: 1.5;
   --text-signature-size: 1.5rem;
   --text-signature-height: 1.2;
+  /* Section viewport-fitting: scale with vh so content fits in 100vh */
+  --section-min-height: 100vh;
+  --section-padding-y: clamp(2rem, 8vh, 7.5rem);
+  --section-padding-x: clamp(1.5rem, 5vw, 60px);
+  --section-gap: clamp(1.25rem, 8vh, 120px);
+  --section-heading-size: clamp(2rem, 12vh, 100px);
+  --section-heading-line: clamp(2.5rem, 15vh, 150px);
+  --blurred-cols-gap: clamp(1rem, 6vh, 72px);
+  --blurred-cols-padding-x: clamp(1.5rem, 15vw, 240px);
+  --blurred-text-size: clamp(0.875rem, 2.5vh, 24px);
+  --blurred-text-line: clamp(1.25rem, 4vh, 40px);
+  --space-paragraph-size: clamp(1rem, 4vh, 40px);
+  --space-paragraph-padding-left: clamp(1.5rem, 30vw, 480px);
+  --footer-padding-y: clamp(2rem, 10vh, 120px);
+  --footer-padding-x: clamp(1.5rem, 5vw, 60px);
+  --footer-gap: clamp(1.5rem, 5vh, var(--space-56));
 }
 
 /* ----- Reset & base ----- */
@@ -535,6 +551,20 @@ body.nav-open .header .menu-toggle span {
   transform: translateY(-2px);
 }
 
+/* Light mode: when over section everyone / spacious (dark bg) – inverted colors */
+.cta-floating.cta-floating--light {
+  background: #fff;
+  color: #252528;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cta-floating.cta-floating--light:hover {
+  background: #f0f0f0;
+  color: #1a1a1a;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
 /* ----- Buttons ----- */
 .btn {
   display: inline-flex;
@@ -581,21 +611,23 @@ a.btn {
 }
 
 /* ----- Sections ----- */
-/* Scroll reveal: smooth ease-out (Kasia Siwosz–style section transition) */
+/* Each section fits viewport height; padding, gap and font sizes scale with vh */
 .section {
   display: flex;
   flex-direction: column;
-  gap: 120px;
+  justify-content: center;
+  min-height: var(--section-min-height);
+  gap: var(--section-gap);
   width: 100%;
   max-width: var(--max-width);
   margin: 0 auto;
   margin-left: 0;
   margin-right: 0;
-  height: fit-content;
-  padding: var(--space-120) 60px;
+  padding: var(--section-padding-y) var(--section-padding-x);
   opacity: 0;
   transform: translateY(48px);
   transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+  box-sizing: border-box;
 }
 
 .section.is-in-view {
@@ -605,9 +637,9 @@ a.btn {
 
 .section-heading {
   font-family: var(--font-heading);
-  font-size: 100px;
+  font-size: var(--section-heading-size);
   font-weight: 500;
-  line-height: 150px;
+  line-height: var(--section-heading-line);
   letter-spacing: 0;
   color: rgba(25, 25, 23, 1);
   text-transform: uppercase;
@@ -629,8 +661,9 @@ a.btn {
 .section--blurred, .section--spacious, .section--aligned, .section--everyone  {
   position: relative;
   width: 100%;
-  height: fit-content;
+  min-height: var(--section-min-height);
   max-width: none;
+  justify-content: center;
 }
 
 .section--spacious {
@@ -666,19 +699,19 @@ a.btn {
 
 .blurred-cols {
   display: flex;
-  gap: 72px;
+  gap: var(--blurred-cols-gap);
   width: 100%;
   margin-top: 0;
-  padding-left: 240px;
-  padding-right: 240px;
+  padding-left: var(--blurred-cols-padding-x);
+  padding-right: var(--blurred-cols-padding-x);
   justify-content: center;
   align-items: flex-start;
 }
 
 .blurred-text {
-  font-size: 24px;
+  font-size: var(--blurred-text-size);
   font-weight: 300;
-  line-height: 40px;
+  line-height: var(--blurred-text-line);
   letter-spacing: var(--text-body-spacing);
   color: rgba(25, 25, 23, 1);
   margin: 0;
@@ -687,7 +720,7 @@ a.btn {
 /* Space section ----- */
 .space-paragraph {
   font-family: var(--font-heading);
-  font-size: 40px;
+  font-size: var(--space-paragraph-size);
   font-weight: 300;
   line-height: 1.8;
   color: rgba(25, 25, 23, 1);
@@ -696,7 +729,7 @@ a.btn {
   display: flex;
   flex-wrap: wrap;
   gap: 0 0.3em;
-  padding-left: 480px;
+  padding-left: var(--space-paragraph-padding-left);
 }
 
 .space-paragraph .space-word {
@@ -713,12 +746,15 @@ a.btn {
   width: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  min-height: var(--section-min-height);
   background: #fff;
-  padding: 120px 60px;
+  padding: var(--footer-padding-y) var(--footer-padding-x);
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   opacity: 0;
   transform: translateY(48px);
   transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+  box-sizing: border-box;
 }
 
 .footer.is-in-view {
@@ -732,7 +768,7 @@ a.btn {
   margin: 0 auto var(--space-64);
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-56);
+  gap: var(--footer-gap);
   justify-content: space-between;
 }
 
