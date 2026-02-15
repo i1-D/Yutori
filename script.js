@@ -74,15 +74,21 @@
     });
   }
 
-  /* Header: dark mode in hero (transparent + white), light mode elsewhere (white bg + black) */
+  /* Header: dark mode in hero + spacious + everyone (transparent + white), light mode elsewhere */
   if (header && hero) {
     const headerHeight = 124;
+    const sectionSpacious = document.querySelector('.section--spacious');
+    const sectionEveryone = document.querySelector('.section--everyone');
     let ticking = false;
 
     function updateHeaderMode() {
       const y = headerHeight / 2;
-      const r = hero.getBoundingClientRect();
-      const isDark = r.top <= y && r.bottom > y;
+      function sectionInView(section) {
+        if (!section) return false;
+        const r = section.getBoundingClientRect();
+        return r.top <= y && r.bottom > y;
+      }
+      const isDark = sectionInView(hero) || sectionInView(sectionSpacious) || sectionInView(sectionEveryone);
       header.setAttribute('data-mode', isDark ? 'dark' : 'light');
       ticking = false;
     }

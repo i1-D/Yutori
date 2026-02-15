@@ -258,6 +258,20 @@ body.nav-open .header .menu-toggle span {
   object-fit: contain;
 }
 
+/* Light mode: show dark logo; dark mode: show light logo */
+.header[data-mode="light"] .logo-img--light {
+  display: none;
+}
+.header[data-mode="light"] .logo-img--dark {
+  display: block;
+}
+.header[data-mode="dark"] .logo-img--dark {
+  display: none;
+}
+.header[data-mode="dark"] .logo-img--light {
+  display: block;
+}
+
 .nav {
   display: flex;
   align-items: center;
@@ -620,15 +634,33 @@ a.btn {
 }
 
 .section--spacious {
-  background-color: #96CADF;
+  background-color: #1a1a1d;
+}
+
+.section--spacious .section-heading,
+.section--spacious .blurred-text,
+.section--spacious .space-paragraph {
+  color: #fff;
 }
 
 .section--aligned {
-  background-color: #E4A6BB;
+  background-color: #fff;
+}
+
+.section--aligned .section-heading,
+.section--aligned .blurred-text,
+.section--aligned .space-paragraph {
+  color: rgba(25, 25, 23, 1);
 }
 
 .section--everyone {
-  background-color: #E3A6E4;
+  background-color: #1a1a1d;
+}
+
+.section--everyone .section-heading,
+.section--everyone .blurred-text,
+.section--everyone .space-paragraph {
+  color: #fff;
 }
 
 
