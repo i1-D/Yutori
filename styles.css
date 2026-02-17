@@ -141,7 +141,7 @@ body.in-footer .decoration {
 .decoration__butterfly {
   position: absolute;
   /* Initial: directly above stone (no gap). Scroll: moves to top-right */
-  left: calc(2.2vw + var(--butterfly-progress, 0) * 68vw);
+  left: calc(2vw + var(--butterfly-progress, 0) * 68vw);
   bottom: calc(8vh + 17vw + var(--butterfly-progress, 0) * 66vh - var(--butterfly-progress, 0) * 20vw);
   width: 20.833vw;
   height: auto;
@@ -153,8 +153,21 @@ body.in-footer .decoration {
   position: absolute;
   left: min(4vw, 40px);
   bottom: 8vh;
+}
+
+.decoration__stone img {
   width: 20.833vw;
   height: auto;
+}
+
+.decoration__rope {
+  transition: opacity 0.15s ease, visibility 0s linear 0s;
+}
+
+.decoration__rope.decoration__rope--hidden {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0s linear 0.15s;
 }
 
 @keyframes flutter {
@@ -1073,7 +1086,7 @@ a.btn {
     width: 25.833vw;
   }
   
-  .decoration__stone {
+  .decoration__stone img {
     width: 25.833vw;
   }
 
@@ -1159,7 +1172,7 @@ a.btn {
     width: 30.833vw;
   }
   
-  .decoration__stone {
+  .decoration__stone img {
     width: 30.833vw;
   }
 
@@ -1315,7 +1328,7 @@ a.btn {
     width: 40.833vw;
   }
   
-  .decoration__stone {
+  .decoration__stone img {
     width: 40.833vw;
   }
 
@@ -1527,7 +1540,7 @@ a.btn {
     width: 45.833vw;
   }
   
-  .decoration__stone {
+  .decoration__stone img {
     width: 40.833vw;
   }
 

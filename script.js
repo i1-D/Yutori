@@ -279,19 +279,30 @@
 
   /* Butterfly: move from stone toward right as user scrolls through sections */
   var decoration = document.querySelector('.decoration');
+  var decorationRope = document.querySelector('.decoration__rope');
   if (decoration) {
     var butterflyTicking = false;
     function updateButterflyPosition(scrollY) {
-      if (scrollY == null) scrollY = window.scrollY;
+      if (scrollY == null) scrollY = getScrollY();
       var maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
       var progress = maxScroll > 0 ? Math.min(1, scrollY / maxScroll) : 0;
       decoration.style.setProperty('--butterfly-progress', String(progress));
+      
+      /* Hide rope when scrolling, show when at top */
+      if (decorationRope) {
+        if (scrollY > 0) {
+          decorationRope.classList.add('decoration__rope--hidden');
+        } else {
+          decorationRope.classList.remove('decoration__rope--hidden');
+        }
+      }
+      
       butterflyTicking = false;
     }
     function onScrollButterfly(ev) {
       if (!butterflyTicking) {
         requestAnimationFrame(function () {
-          var scrollY = typeof ev === 'number' ? ev : (ev && typeof ev.scroll === 'number' ? ev.scroll : window.scrollY);
+          var scrollY = typeof ev === 'number' ? ev : (ev && typeof ev.scroll === 'number' ? ev.scroll : getScrollY());
           updateButterflyPosition(scrollY);
         });
         butterflyTicking = true;
