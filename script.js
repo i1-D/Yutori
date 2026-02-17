@@ -288,9 +288,17 @@
       var progress = maxScroll > 0 ? Math.min(1, scrollY / maxScroll) : 0;
       decoration.style.setProperty('--butterfly-progress', String(progress));
       
-      /* Hide rope when scrolling, show when at top */
+      /* Set data attribute for CSS to detect when at top (progress = 0) */
+      if (progress === 0) {
+        decoration.setAttribute('data-butterfly-progress', '0');
+      } else {
+        decoration.removeAttribute('data-butterfly-progress');
+      }
+      
+      /* Hide rope when scrolling down, show when near top (second last scroll) */
       if (decorationRope) {
-        if (scrollY > 0) {
+        var scrollThreshold = 100; /* Show rope when within 100px of top */
+        if (scrollY > scrollThreshold) {
           decorationRope.classList.add('decoration__rope--hidden');
         } else {
           decorationRope.classList.remove('decoration__rope--hidden');

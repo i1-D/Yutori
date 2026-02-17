@@ -149,6 +149,12 @@ body.in-footer .decoration {
   transition: left 0.35s ease-out, bottom 0.35s ease-out;
 }
 
+/* When at top (progress = 0), delay butterfly so rope appears first */
+.decoration[data-butterfly-progress="0"] .decoration__butterfly {
+  transition-delay: 0.55s;
+  transition-duration: 0.4s;
+}
+
 .decoration__stone {
   position: absolute;
   left: min(4vw, 40px);
@@ -161,13 +167,22 @@ body.in-footer .decoration {
 }
 
 .decoration__rope {
-  transition: opacity 0.15s ease, visibility 0s linear 0s;
+  transform-origin: bottom center;
+  transform: scaleY(1) translateY(0);
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), 
+              transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              visibility 0s linear 0s;
 }
 
 .decoration__rope.decoration__rope--hidden {
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.15s ease, visibility 0s linear 0.15s;
+  transform: scaleY(0) translateY(20px);
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 1, 1), 
+              transform 0.35s cubic-bezier(0.4, 0, 1, 1),
+              visibility 0s linear 0.35s;
 }
 
 @keyframes flutter {
