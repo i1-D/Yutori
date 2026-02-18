@@ -74,21 +74,25 @@
     });
   }
 
-  /* Header: dark mode in hero + spacious + everyone (transparent + white), light mode elsewhere */
+  /* Header: dark mode in hero pin zone (0–200vh) + spacious + everyone, light mode elsewhere */
   if (header && hero) {
     const headerHeight = 124;
+    const heroPin = document.querySelector('.hero-pin');
     const sectionSpacious = document.querySelector('.section--spacious');
     const sectionEveryone = document.querySelector('.section--everyone');
     let ticking = false;
 
     function updateHeaderMode() {
+      const scrollY = getScrollY();
+      const heroPinHeight = heroPin ? heroPin.offsetHeight : 2 * window.innerHeight;
+      const inHeroPin = scrollY < heroPinHeight;
       const y = headerHeight / 2;
       function sectionInView(section) {
         if (!section) return false;
         const r = section.getBoundingClientRect();
         return r.top <= y && r.bottom > y;
       }
-      const isDark = sectionInView(hero) || sectionInView(sectionSpacious) || sectionInView(sectionEveryone);
+      const isDark = inHeroPin || sectionInView(sectionSpacious) || sectionInView(sectionEveryone);
       header.setAttribute('data-mode', isDark ? 'dark' : 'light');
       ticking = false;
     }
@@ -113,168 +117,62 @@
     return lenis && typeof lenis.scroll === 'number' ? lenis.scroll : window.scrollY;
   }
 
-  /* Hero parallax: background and text move at different speeds on scroll */
-  if (hero && heroBgDark && heroBgBright && heroContent) {
-    var heroParallaxTicking = false;
-    
-    function updateHeroParallax(scrollY) {
-      if (scrollY == null) scrollY = getScrollY();
-      
-      var heroRect = hero.getBoundingClientRect();
-      var heroTop = hero.offsetTop;
-      var heroHeight = hero.offsetHeight;
-      var viewportHeight = window.innerHeight;
-      
-      // Calculate scroll progress through hero section (0 = top of hero, 1 = bottom)
-      var scrollProgress = Math.max(0, Math.min(1, (scrollY - heroTop + viewportHeight) / (heroHeight + viewportHeight)));
-      
-      // Only apply parallax while hero is visible or just scrolled past
-      if (heroRect.bottom > -viewportHeight && heroRect.top < viewportHeight * 2) {
-        // Background moves slower (0.6x speed) - creates depth effect
-        // As user scrolls down, background moves up slower, creating parallax
-        var bgOffset = scrollProgress * viewportHeight * 0.6;
-        heroBgDark.style.transform = `translateY(${-bgOffset}px)`;
-        heroBgBright.style.transform = `translateY(${-bgOffset}px)`;
-        
-        // Text moves even slower (0.4x speed) - stays more in place relative to viewport
-        var textOffset = scrollProgress * viewportHeight * 0.4;
-        heroContent.style.transform = `translateY(${-textOffset}px)`;
-      } else {
-        // Reset when hero is far out of view
-        if (heroRect.bottom < -viewportHeight) {
-          heroBgDark.style.transform = `translateY(${-viewportHeight * 0.6}px)`;
-          heroBgBright.style.transform = `translateY(${-viewportHeight * 0.6}px)`;
-          heroContent.style.transform = `translateY(${-viewportHeight * 0.4}px)`;
-        } else {
-          heroBgDark.style.transform = 'translateY(0)';
-          heroBgBright.style.transform = 'translateY(0)';
-          heroContent.style.transform = 'translateY(0)';
-        }
-      }
-      
-      heroParallaxTicking = false;
-    }
-    
-    function onScrollHeroParallax(ev) {
-      if (!heroParallaxTicking) {
-        requestAnimationFrame(function () {
-          var scrollY = typeof ev === 'number' ? ev : (ev && typeof ev.scroll === 'number' ? ev.scroll : getScrollY());
-          updateHeroParallax(scrollY);
-        });
-        heroParallaxTicking = true;
-      }
-    }
-    
-    if (lenis) {
-      lenis.on('scroll', onScrollHeroParallax);
-    } else {
-      window.addEventListener('scroll', onScrollHeroParallax, { passive: true });
-    }
-    window.addEventListener('resize', function () {
-      updateHeroParallax();
-    });
-    updateHeroParallax();
-  }
+  /* Hero: Cascaid-style fixed section – scroll drives background + text transition (0–100vh), then page scrolls on */
+  if (hero && heroBgDark && heroBgBright && heroContent && heroTitle && heroTitle2) {
+    var heroScrollTicking = false;
+    var scrollBudget = function () { return window.innerHeight; }; /* first 100vh of scroll drives animation */
 
-  /* Hero title scroll animation: reveal title-2 on scroll, reverse on scroll up */
-  /* Also changes background from hero-dark to hero-bright on scroll */
-  if (hero && heroTitle && heroTitle2 && heroBgDark && heroBgBright) {
-    var heroTitleTicking = false;
-
-    // Set initial state - title-2 hidden, background dark
     heroTitle2.style.opacity = '0';
-    heroTitle2.style.transform = 'translateY(100px)';
+    heroTitle2.style.transform = 'translate(-50%, calc(-50% + 100px))';
     heroBgDark.style.opacity = 1;
     heroBgBright.style.opacity = 0;
-    
-    function updateHeroTitleAnimation(scrollY) {
-      if (scrollY == null) scrollY = getScrollY();
-      
-      var heroRect = hero.getBoundingClientRect();
-      var heroTop = hero.offsetTop;
-      var heroHeight = hero.offsetHeight;
-      var viewportHeight = window.innerHeight;
-      
-      // Calculate scroll progress through hero section (0 = top of hero, 1 = bottom)
-      var scrollProgress = Math.max(0, Math.min(1, (scrollY - heroTop + viewportHeight) / (heroHeight + viewportHeight)));
-      // Narrow band 0.5–0.6 so scrolling back up (title 2 → title 1) completes in one scroll
-      var scrollUpEnd = 0.5;   // below this = title 1
-      var scrollDownEnd = 0.6; // above this = title 2
-      
-      var isAtTop = scrollProgress < scrollUpEnd || scrollY <= heroTop;
-      
-      // Only animate while hero is visible
-      if (heroRect.bottom > -viewportHeight && heroRect.top < viewportHeight * 2) {
-        if (isAtTop) {
-          // At top of hero or scrolled back up - fully reset to original state
-          heroTitle.style.opacity = 1;
-          heroTitle.style.transform = 'translateY(0)';
-          heroTitle2.style.opacity = 0;
-          heroTitle2.style.transform = 'translateY(60px)';
-          // Reset background to dark (fully visible dark, fully hidden bright)
-          heroBgDark.style.opacity = 1;
-          heroBgBright.style.opacity = 0;
-        } else {
-          // Transition zone 0.5–0.6: one scroll up returns to title 1
-          var animationProgress = scrollProgress <= scrollUpEnd ? 0 : Math.min(1, (scrollProgress - scrollUpEnd) / (scrollDownEnd - scrollUpEnd));
-          
-          // Title 1: reduce opacity to 0.05 on scroll down, back to 1.0 on scroll up
-          var title1Opacity = 1 - (animationProgress * 0.95);
-          heroTitle.style.opacity = title1Opacity;
-          heroTitle.style.transform = 'translateY(0)';
-          
-          // Title 2: reveal on scroll down, hide on scroll up - fade in/out and slide up/down
-          var title2Opacity = animationProgress;
-          var title2TranslateY = (1 - animationProgress) * 100;
-          heroTitle2.style.opacity = title2Opacity;
-          heroTitle2.style.transform = `translateY(${title2TranslateY}px)`;
-          
-          // Smooth crossfade between dark and bright backgrounds based on scroll progress
-          // Dark fades out (1 -> 0), Bright fades in (0 -> 1) as animationProgress increases
-          heroBgDark.style.opacity = 1 - animationProgress;
-          heroBgBright.style.opacity = animationProgress;
-        }
-      } else {
-        // Reset when hero is far out of view
-        if (heroRect.bottom < -viewportHeight) {
-          // Scrolled past hero - title 1 at 0.05 opacity, title 2 fully visible, bright background
-          heroTitle.style.opacity = 0.05;
-          heroTitle.style.transform = 'translateY(0)';
-          heroTitle2.style.opacity = 1;
-          heroTitle2.style.transform = 'translateY(0)';
-          heroBgDark.style.opacity = 0;
-          heroBgBright.style.opacity = 1;
-        } else {
-          // Before hero or scrolled back to top - show title 1 at full opacity only, dark background
-          heroTitle.style.opacity = 1;
-          heroTitle.style.transform = 'translateY(0)';
-          heroTitle2.style.opacity = 0;
-          heroTitle2.style.transform = 'translateY(100px)';
-          heroBgDark.style.opacity = 1;
-          heroBgBright.style.opacity = 0;
-        }
-      }
+    heroBgDark.style.transform = 'translateY(0)';
+    heroBgBright.style.transform = 'translateY(0)';
+    heroContent.style.transform = 'translateY(0)';
 
-      heroTitleTicking = false;
+    function updateHeroScroll(scrollY) {
+      if (scrollY == null) scrollY = getScrollY();
+      var budget = scrollBudget();
+      var progress = Math.max(0, Math.min(1, scrollY / budget));
+
+      /* Background crossfade: dark → bright */
+      heroBgDark.style.opacity = 1 - progress;
+      heroBgBright.style.opacity = progress;
+
+      /* Title 1: fade out and stay; Title 2: fade in and slide up to center */
+      var title1Opacity = 1 - (progress * 0.95);
+      heroTitle.style.opacity = title1Opacity;
+      heroTitle.style.transform = 'translateY(0)';
+      
+      /* Title 2: absolutely centered; starts 100px below center, slides up to center */
+      var title2StartY = 100;
+      var title2EndY = 0;
+      var title2TranslateY = title2StartY + (title2EndY - title2StartY) * progress;
+      heroTitle2.style.opacity = progress;
+      heroTitle2.style.transform = 'translate(-50%, calc(-50% + ' + title2TranslateY + 'px))';
+
+      heroScrollTicking = false;
     }
-    
-    function onScrollHeroTitle(ev) {
-      if (!heroTitleTicking) {
+
+    function onScrollHero(ev) {
+      if (!heroScrollTicking) {
         requestAnimationFrame(function () {
           var scrollY = typeof ev === 'number' ? ev : (ev && typeof ev.scroll === 'number' ? ev.scroll : getScrollY());
-          updateHeroTitleAnimation(scrollY);
+          updateHeroScroll(scrollY);
         });
-        heroTitleTicking = true;
+        heroScrollTicking = true;
       }
     }
-    
+
     if (lenis) {
-      lenis.on('scroll', onScrollHeroTitle);
+      lenis.on('scroll', onScrollHero);
     } else {
-      window.addEventListener('scroll', onScrollHeroTitle, { passive: true });
+      window.addEventListener('scroll', onScrollHero, { passive: true });
     }
-    // Initial run: correct state at load and when scrolling back to top
-    updateHeroTitleAnimation(getScrollY());
+    window.addEventListener('resize', function () {
+      updateHeroScroll();
+    });
+    updateHeroScroll();
   }
 
   /* Butterfly: move from stone toward right as user scrolls through sections */
