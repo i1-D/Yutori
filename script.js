@@ -299,7 +299,7 @@
     updateCtaFloating();
   }
 
-  /* Section & footer scroll-in: smooth ease-out reveal, re-trigger every time section enters view */
+  /* Section & footer scroll-in: reveal only when scrolling down (once per section), no reverse animation on scroll up */
   var scrollRevealEls = document.querySelectorAll('.section, .footer');
   if (scrollRevealEls.length && 'IntersectionObserver' in window) {
     var scrollRevealObserver = new IntersectionObserver(
@@ -307,9 +307,8 @@
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
             entry.target.classList.add('is-in-view');
-          } else {
-            entry.target.classList.remove('is-in-view');
           }
+          /* Never remove is-in-view so sections stay revealed when scrolling back up */
         });
       },
       { rootMargin: '0px 0px -8% 0px', threshold: 0.05 }
@@ -319,7 +318,7 @@
     });
   }
 
-  /* Space paragraph: reveal words one paragraph after another within each section */
+  /* Space paragraph: reveal words one paragraph after another, only when scrolling down (never reverse) */
   var blurredCols = document.querySelectorAll('.blurred-cols');
   if (blurredCols.length && 'IntersectionObserver' in window) {
     var wordStaggerMs = 50;
@@ -333,12 +332,8 @@
         words.forEach(function (word, i) {
           word.style.transitionDelay = (i * wordStaggerMs) + 'ms';
         });
-      } else {
-        paragraph.classList.remove('is-in-view');
-        words.forEach(function (word) {
-          word.style.transitionDelay = '';
-        });
       }
+      /* Never remove is-in-view so words stay revealed when scrolling back up */
     }
 
     function isContainerInView(container) {
@@ -351,29 +346,25 @@
         entries.forEach(function (entry) {
           var container = entry.target;
           var paragraphs = container.querySelectorAll('.space-paragraph');
-          if (entry.isIntersecting) {
-            if (paragraphs.length >= 1) {
-              setParagraphInView(paragraphs[0], true);
+          if (!entry.isIntersecting) return;
+          /* Only reveal when already revealed (skip re-trigger when scrolling back down) */
+          if (paragraphs.length >= 1 && !paragraphs[0].classList.contains('is-in-view')) {
+            setParagraphInView(paragraphs[0], true);
+          }
+          if (paragraphs.length >= 2 && !paragraphs[1].classList.contains('is-in-view')) {
+            var firstWordCount = paragraphs[0].querySelectorAll('.space-word').length;
+            var delay = firstWordCount * wordStaggerMs + gapBetweenParagraphsMs;
+            if (pendingSecond[container]) {
+              clearTimeout(pendingSecond[container]);
             }
-            if (paragraphs.length >= 2) {
-              var firstWordCount = paragraphs[0].querySelectorAll('.space-word').length;
-              var delay = firstWordCount * wordStaggerMs + gapBetweenParagraphsMs;
-              if (pendingSecond[container]) {
-                clearTimeout(pendingSecond[container]);
+            var id = setTimeout(function () {
+              delete pendingSecond[container];
+              if (isContainerInView(container)) {
+                var paras = container.querySelectorAll('.space-paragraph');
+                if (paras[1]) setParagraphInView(paras[1], true);
               }
-              var id = setTimeout(function () {
-                delete pendingSecond[container];
-                if (isContainerInView(container)) {
-                  var paras = container.querySelectorAll('.space-paragraph');
-                  if (paras[1]) setParagraphInView(paras[1], true);
-                }
-              }, delay);
-              pendingSecond[container] = id;
-            }
-          } else {
-            for (var p = 0; p < paragraphs.length; p++) {
-              setParagraphInView(paragraphs[p], false);
-            }
+            }, delay);
+            pendingSecond[container] = id;
           }
         });
       },
