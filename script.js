@@ -421,32 +421,68 @@
     });
   }
 
-  /* Space paragraph: reveal words on scroll in, fade back to 0.3 when scroll out */
-  var spaceParagraphs = document.querySelectorAll('.space-paragraph');
-  if (spaceParagraphs.length && 'IntersectionObserver' in window) {
+  /* Space paragraph: reveal words one paragraph after another within each section */
+  var blurredCols = document.querySelectorAll('.blurred-cols');
+  if (blurredCols.length && 'IntersectionObserver' in window) {
     var wordStaggerMs = 50;
-    var spaceObserver = new IntersectionObserver(
+    var gapBetweenParagraphsMs = 400;
+    var pendingSecond = Object.create(null);
+
+    function setParagraphInView(paragraph, inView) {
+      var words = paragraph.querySelectorAll('.space-word');
+      if (inView) {
+        paragraph.classList.add('is-in-view');
+        words.forEach(function (word, i) {
+          word.style.transitionDelay = (i * wordStaggerMs) + 'ms';
+        });
+      } else {
+        paragraph.classList.remove('is-in-view');
+        words.forEach(function (word) {
+          word.style.transitionDelay = '';
+        });
+      }
+    }
+
+    function isContainerInView(container) {
+      var rect = container.getBoundingClientRect();
+      return rect.bottom > window.innerHeight * 0.05 && rect.top < window.innerHeight * 0.95;
+    }
+
+    var spaceContainerObserver = new IntersectionObserver(
       function (entries) {
         entries.forEach(function (entry) {
-          var paragraph = entry.target;
-          var words = paragraph.querySelectorAll('.space-word');
+          var container = entry.target;
+          var paragraphs = container.querySelectorAll('.space-paragraph');
           if (entry.isIntersecting) {
-            paragraph.classList.add('is-in-view');
-            words.forEach(function (word, i) {
-              word.style.transitionDelay = (i * wordStaggerMs) + 'ms';
-            });
+            if (paragraphs.length >= 1) {
+              setParagraphInView(paragraphs[0], true);
+            }
+            if (paragraphs.length >= 2) {
+              var firstWordCount = paragraphs[0].querySelectorAll('.space-word').length;
+              var delay = firstWordCount * wordStaggerMs + gapBetweenParagraphsMs;
+              if (pendingSecond[container]) {
+                clearTimeout(pendingSecond[container]);
+              }
+              var id = setTimeout(function () {
+                delete pendingSecond[container];
+                if (isContainerInView(container)) {
+                  var paras = container.querySelectorAll('.space-paragraph');
+                  if (paras[1]) setParagraphInView(paras[1], true);
+                }
+              }, delay);
+              pendingSecond[container] = id;
+            }
           } else {
-            paragraph.classList.remove('is-in-view');
-            words.forEach(function (word) {
-              word.style.transitionDelay = '';
-            });
+            for (var p = 0; p < paragraphs.length; p++) {
+              setParagraphInView(paragraphs[p], false);
+            }
           }
         });
       },
       { rootMargin: '0px 0px -5% 0px', threshold: 0.1 }
     );
-    spaceParagraphs.forEach(function (paragraph) {
-      spaceObserver.observe(paragraph);
+    blurredCols.forEach(function (col) {
+      spaceContainerObserver.observe(col);
     });
   }
 })();
