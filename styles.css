@@ -141,8 +141,8 @@ body.in-footer .decoration {
 .decoration__butterfly {
   position: absolute;
   /* Initial: directly above stone (no gap). Scroll: moves to top-right */
-  left: calc(2vw + var(--butterfly-progress, 0) * 68vw);
-  bottom: calc(8vh + 14vw + var(--butterfly-progress, 0) * 66vh - var(--butterfly-progress, 0) * 20vw);
+  left: calc(2.8vw + var(--butterfly-progress, 0) * 68vw);
+  bottom: calc(7.9vh + 14vw + var(--butterfly-progress, 0) * 66vh - var(--butterfly-progress, 0) * 20vw);
   width: 16.833vw;
   height: auto;
   transform-origin: center center;
