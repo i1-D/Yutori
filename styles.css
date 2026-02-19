@@ -373,6 +373,7 @@ body.nav-open--light .header .menu-toggle span {
 
 .nav-link {
   font-size: 20px;
+  font-family: var(--font-heading);
   font-weight: 400;
   line-height: 1.3;
   letter-spacing: 0.02em;
