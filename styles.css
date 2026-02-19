@@ -159,6 +159,15 @@ body.in-footer .decoration {
   position: absolute;
   left: min(4vw, 40px);
   bottom: 8vh;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.4s ease, visibility 0s linear 0s;
+}
+
+.decoration.decoration--stone-hidden .decoration__stone {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0s linear 0.4s;
 }
 
 .decoration__stone img {
@@ -200,7 +209,7 @@ body.in-footer .decoration {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: var(--space-24) var(--space-40);
+  padding: var(--space-8) var(--space-40);
   transition: background 0.3s ease, color 0.3s ease, transform 0.4s ease;
 }
 
@@ -208,9 +217,30 @@ body.in-footer .header {
   transform: translateY(-100%);
 }
 
-/* Dark mode: hero – transparent background, white text */
-.header[data-mode="dark"] {
+/* Hero: transparent background, white text (initial state when hero visible) */
+.header[data-mode="hero"] {
   background: transparent;
+}
+
+.header[data-mode="hero"] .nav-link {
+  color: #fff;
+}
+
+.header[data-mode="hero"] .menu-toggle {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.header[data-mode="hero"] .menu-toggle:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.header[data-mode="hero"] .menu-toggle span {
+  background: #fff;
+}
+
+/* Dark mode: spacious / everyone sections – solid dark background */
+.header[data-mode="dark"] {
+  background: #1a1a1d;
 }
 
 .header[data-mode="dark"] .nav-link {
@@ -229,9 +259,9 @@ body.in-footer .header {
   background: #fff;
 }
 
-/* Light mode: other sections – white background, black text */
+/* Light mode: other sections – white background, dark text */
 .header[data-mode="light"] {
-  background: transparent;
+  background: #fff;
   border-bottom: none;
   box-shadow: none;
 }
@@ -294,6 +324,22 @@ body.nav-open .header .menu-toggle span {
   background: #fff;
 }
 
+body.nav-open--light .header .nav-link {
+  color: #1a1a1d;
+}
+
+body.nav-open--light .header .menu-toggle {
+  background: rgba(26, 26, 29, 0.15);
+}
+
+body.nav-open--light .header .menu-toggle:hover {
+  background: rgba(26, 26, 29, 0.25);
+}
+
+body.nav-open--light .header .menu-toggle span {
+  background: #1a1a1d;
+}
+
 .logo-img {
   display: block;
   height: 76px;
@@ -309,9 +355,11 @@ body.nav-open .header .menu-toggle span {
 .header[data-mode="light"] .logo-img--dark {
   display: block;
 }
+.header[data-mode="hero"] .logo-img--dark,
 .header[data-mode="dark"] .logo-img--dark {
   display: none;
 }
+.header[data-mode="hero"] .logo-img--light,
 .header[data-mode="dark"] .logo-img--light {
   display: block;
 }
@@ -470,7 +518,6 @@ body.nav-open .header .menu-toggle span {
   line-height: var(--text-hero-height);
   letter-spacing: var(--text-hero-spacing);
   color: #fff;
-  text-transform: capitalize;
   display: flex;
   flex-direction: column;
   gap: var(--space-32);
@@ -487,7 +534,6 @@ body.nav-open .header .menu-toggle span {
   will-change: opacity, transform;
   pointer-events: none;
   margin-bottom: var(--space-32);
-  text-transform: capitalize;
 }
 
 .hero-title-2 {
@@ -556,18 +602,18 @@ body.nav-open .header .menu-toggle span {
 /* ----- Floating CTA ----- */
 .cta-floating {
   position: fixed;
-  bottom: 32px;
-  right: 32px;
+  bottom: 26px;
+  right: 26px;
   z-index: 98;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 80px;
-  padding: 0 24px;
+  height: 64px;
+  padding: 0 19px;
   background: #252528;
   color: #fff;
   font-family: var(--font-body);
-  font-size: 1.2rem;
+  font-size: 0.96rem;
   font-weight: 300;
   line-height: 1.3;
   letter-spacing: 0.03em;
@@ -919,7 +965,6 @@ a.btn {
   position: fixed;
   inset: 0;
   z-index: 99;
-  background: rgba(26, 26, 29, 1);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -927,7 +972,15 @@ a.btn {
   padding-right: var(--space-120);
   transform: translateY(-100%);
   visibility: hidden;
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.5s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s ease;
+}
+
+body.nav-open--dark .nav-overlay {
+  background: #1a1a1d;
+}
+
+body.nav-open--light .nav-overlay {
+  background: #fff;
 }
 
 .nav-overlay.is-open {
@@ -970,11 +1023,18 @@ a.btn {
   font-family: var(--font-heading);
   font-size: 56px;
   font-weight: 500;
-  color: #fff;
   text-align: right;
   opacity: 0;
   transform: translateY(24px);
-  transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease;
+}
+
+body.nav-open--dark .nav-overlay-menu a {
+  color: #fff;
+}
+
+body.nav-open--light .nav-overlay-menu a {
+  color: #1a1a1d;
 }
 
 /* Staggered delay only when opening – links animate in one by one */
@@ -1089,11 +1149,11 @@ a.btn {
   }
 
   .cta-floating {
-    bottom: 28px;
-    right: 28px;
-    height: 76px;
-    padding: 0 22px;
-    font-size: 1.125rem;
+    bottom: 22px;
+    right: 22px;
+    height: 61px;
+    padding: 0 18px;
+    font-size: 0.9rem;
   }
 
   .cta-floating.cta-floating--visible {
@@ -1187,11 +1247,11 @@ a.btn {
   }
 
   .cta-floating {
-    bottom: 26px;
-    right: 24px;
-    height: 72px;
-    padding: 0 20px;
-    font-size: 1.0625rem;
+    bottom: 21px;
+    right: 19px;
+    height: 58px;
+    padding: 0 16px;
+    font-size: 0.85rem;
   }
 }
 
@@ -1292,11 +1352,11 @@ a.btn {
   }
 
   .cta-floating {
-    bottom: 24px;
-    right: 20px;
-    height: 68px;
-    padding: 0 18px;
-    font-size: 1rem;
+    bottom: 19px;
+    right: 16px;
+    height: 54px;
+    padding: 0 14px;
+    font-size: 0.8rem;
   }
 
   .hero-title, .hero-title-2 {
@@ -1420,11 +1480,11 @@ a.btn {
   }
 
   .cta-floating {
-    bottom: 20px;
-    right: 12px;
-    height: 64px;
-    padding: 0 16px;
-    font-size: 0.875rem;
+    bottom: 16px;
+    right: 10px;
+    height: 51px;
+    padding: 0 13px;
+    font-size: 0.7rem;
   }
 
   .section {
@@ -1756,11 +1816,11 @@ a.btn {
   }
 
   .cta-floating {
-    bottom: 16px;
-    right: 12px;
-    height: 56px;
-    padding: 0 14px;
-    font-size: 0.8125rem;
+    bottom: 13px;
+    right: 10px;
+    height: 45px;
+    padding: 0 11px;
+    font-size: 0.65rem;
   }
 
   .cta-floating.cta-floating--visible {

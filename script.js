@@ -54,10 +54,17 @@
     });
   }
 
-  if (menuToggle && navOverlay) {
+  if (menuToggle && navOverlay && header) {
     menuToggle.addEventListener('click', function () {
       const isOpen = navOverlay.classList.toggle('is-open');
       document.body.classList.toggle('nav-open', isOpen);
+      if (isOpen) {
+        var mode = header.getAttribute('data-mode') || 'dark';
+        var overlayMode = (mode === 'hero' || mode === 'dark') ? 'dark' : 'light';
+        document.body.classList.add('nav-open--' + overlayMode);
+      } else {
+        document.body.classList.remove('nav-open--dark', 'nav-open--light');
+      }
       menuToggle.setAttribute('aria-expanded', isOpen);
       menuToggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
       document.body.style.overflow = isOpen ? 'hidden' : '';
@@ -66,7 +73,7 @@
     navOverlay.querySelectorAll('a').forEach(function (link) {
       link.addEventListener('click', function () {
         navOverlay.classList.remove('is-open');
-        document.body.classList.remove('nav-open');
+        document.body.classList.remove('nav-open', 'nav-open--dark', 'nav-open--light');
         menuToggle.setAttribute('aria-expanded', 'false');
         menuToggle.setAttribute('aria-label', 'Open menu');
         document.body.style.overflow = '';
@@ -92,8 +99,9 @@
         const r = section.getBoundingClientRect();
         return r.top <= y && r.bottom > y;
       }
-      const isDark = inHeroPin || sectionInView(sectionSpacious) || sectionInView(sectionEveryone);
-      header.setAttribute('data-mode', isDark ? 'dark' : 'light');
+      const inDarkSection = sectionInView(sectionSpacious) || sectionInView(sectionEveryone);
+      const mode = inHeroPin ? 'hero' : (inDarkSection ? 'dark' : 'light');
+      header.setAttribute('data-mode', mode);
       ticking = false;
     }
 
@@ -173,6 +181,43 @@
       updateHeroScroll();
     });
     updateHeroScroll();
+  }
+
+  /* Stone: hide once blurred section is 30% in view; show only when hero is back in view */
+  var sectionBlurred = document.querySelector('.section--blurred');
+  var heroPin = document.querySelector('.hero-pin');
+  var decorationStone = document.querySelector('.decoration__stone');
+  var decoration = document.querySelector('.decoration');
+  if (sectionBlurred && heroPin && decorationStone && decoration && 'IntersectionObserver' in window) {
+    var blurredObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            decoration.classList.add('decoration--stone-hidden');
+          }
+        });
+      },
+      { rootMargin: '0px', threshold: 0.3 }
+    );
+    var heroObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            decoration.classList.remove('decoration--stone-hidden');
+          }
+        });
+      },
+      { rootMargin: '0px', threshold: 0 }
+    );
+    blurredObserver.observe(sectionBlurred);
+    heroObserver.observe(heroPin);
+    /* Initial state: hide stone if blurred section is already 30% in view */
+    var r = sectionBlurred.getBoundingClientRect();
+    var viewHeight = window.innerHeight;
+    var visibleRatio = Math.max(0, Math.min(1, (viewHeight - r.top) / r.height));
+    if (visibleRatio >= 0.3) {
+      decoration.classList.add('decoration--stone-hidden');
+    }
   }
 
   /* Butterfly: move from stone toward right as user scrolls through sections */
