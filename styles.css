@@ -51,11 +51,9 @@
   --section-padding-x: clamp(1.5rem, 5vw, 60px);
   --section-gap: clamp(1.25rem, 8vh, 120px);
   --section-heading-size: clamp(2rem, 10vh, 80px);
-  --section-heading-line: clamp(2.5rem, 15vh, 150px);
+  --section-heading-line: 1.5;
   --blurred-cols-gap: clamp(1rem, 6vh, 72px);
   --blurred-cols-padding-x: clamp(1.5rem, 15vw, 240px);
-  --blurred-text-size: clamp(0.875rem, 2.5vh, 24px);
-  --blurred-text-line: clamp(1.25rem, 4vh, 40px);
   --space-paragraph-size: clamp(1rem, 3vh, 36px);
   --space-paragraph-padding-left: clamp(1.5rem, 30vw, 480px);
   --footer-padding-y: clamp(2rem, 10vh, 120px);
@@ -762,7 +760,6 @@ a.btn {
 }
 
 .section--spacious .section-heading,
-.section--spacious .blurred-text,
 .section--spacious .space-paragraph {
   color: #fff;
 }
@@ -772,7 +769,6 @@ a.btn {
 }
 
 .section--aligned .section-heading,
-.section--aligned .blurred-text,
 .section--aligned .space-paragraph {
   color: rgba(25, 25, 23, 1);
 }
@@ -782,7 +778,6 @@ a.btn {
 }
 
 .section--everyone .section-heading,
-.section--everyone .blurred-text,
 .section--everyone .space-paragraph {
   color: #fff;
 }
@@ -797,15 +792,6 @@ a.btn {
   padding-right: var(--blurred-cols-padding-x);
   justify-content: center;
   align-items: flex-start;
-}
-
-.blurred-text {
-  font-size: var(--blurred-text-size);
-  font-weight: 300;
-  line-height: var(--blurred-text-line);
-  letter-spacing: var(--text-body-spacing);
-  color: rgba(25, 25, 23, 1);
-  margin: 0;
 }
 
 /* Space section ----- */
@@ -1057,6 +1043,14 @@ body.nav-open--light .nav-overlay-menu a {
 /* ----- Responsive ----- */
 /* Desktop 1360px and below */
 @media (max-width: 1360px) {
+
+  :root {
+    --blurred-cols-padding-x: 120px;
+    --section-padding-x: clamp(1.5rem, 8vw, 120px);
+    --footer-padding-x: clamp(1.5rem, 8vw, 120px);
+  }
+
+
   .header {
     padding: var(--space-24) var(--space-32);
   }
@@ -1082,36 +1076,15 @@ body.nav-open--light .nav-overlay-menu a {
     margin-bottom: var(--space-40);
   }
 
-  .section {
-    padding: var(--space-96) 52px;
-    gap: 96px;
-  }
-
-  .section-heading {
-    font-size: clamp(56px, 9vw, 90px);
-    line-height: 1.15;
-    transform: translateY(50px);
-  }
-
   .blurred-cols {
     gap: 56px;
-    padding-left: 180px;
-    padding-right: 180px;
-  }
-
-  .blurred-text {
-    font-size: 22px;
-    line-height: 1.55;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .space-paragraph {
-    font-size: clamp(1.375rem, 3.5vw, 2.25rem);
-    padding-left: 320px;
+    font-size: var(--space-paragraph-size);
     gap: 0 0.32em;
-  }
-
-  .footer {
-    padding: 96px 52px;
   }
 
   .footer-grid {
@@ -1172,6 +1145,9 @@ body.nav-open--light .nav-overlay-menu a {
 /* Smaller desktop */
 @media (max-width: 1100px) {
 
+  :root {
+    --section-heading-size: clamp(2rem, 8vh, 60px);
+
   .decoration__butterfly {
     bottom: calc(8vh + 21vw + var(--butterfly-progress, 0) * 66vh - var(--butterfly-progress, 0) * 20vw);
     width: 25.833vw;
@@ -1185,40 +1161,15 @@ body.nav-open--light .nav-overlay-menu a {
     padding: var(--space-20) var(--space-32);
   }
 
-  .nav-overlay {
-    padding-left: var(--space-32);
-    padding-right: var(--space-80);
-  }
-
-  .section {
-    padding: var(--space-96) 48px;
-    gap: 80px;
-  }
-
-  .section-heading {
-    font-size: clamp(48px, 10vw, 80px);
-    line-height: 1.2;
-  }
-
   .blurred-cols {
-    gap: 48px;
-    padding-left: 120px;
-    padding-right: 120px;
-  }
-
-  .blurred-text {
-    font-size: 20px;
-    line-height: 1.6;
+    gap: 56px;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .space-paragraph {
-    font-size: clamp(1.5rem, 4vw, 2rem);
-    padding-left: 120px;
+    font-size: var(--space-paragraph-size);
     gap: 0 0.3em;
-  }
-
-  .footer {
-    padding: 80px 48px;
   }
 
   .footer-grid {
@@ -1252,7 +1203,7 @@ body.nav-open--light .nav-overlay-menu a {
     right: 19px;
     height: 58px;
     padding: 0 16px;
-    font-size: 0.85rem;
+    font-size: 12px;
   }
 }
 
@@ -1276,35 +1227,8 @@ body.nav-open--light .nav-overlay-menu a {
     padding-right: var(--space-48);
   }
 
-  .section {
-    padding: var(--space-80) 32px;
-    gap: 64px;
-  }
-
-  .section-heading {
-    font-size: clamp(36px, 8vw, 56px);
-    line-height: 1.25;
-  }
-
-  .blurred-cols {
-    flex-direction: column;
-    gap: 32px;
-    padding-left: 32px;
-    padding-right: 32px;
-  }
-
-  .blurred-text {
-    font-size: 18px;
-    line-height: 1.55;
-  }
-
   .space-paragraph {
-    font-size: clamp(1.25rem, 4vw, 1.5rem);
-    padding-left: 32px;
-  }
-
-  .footer {
-    padding: 64px 32px;
+    font-size: var(--space-paragraph-size);
   }
 
   .footer-grid {
@@ -1484,40 +1408,24 @@ body.nav-open--light .nav-overlay-menu a {
     bottom: 16px;
     right: 10px;
     height: 51px;
-    padding: 0 13px;
-    font-size: 0.7rem;
-  }
-
-  .section {
-    padding: var(--space-80) var(--space-40);
-    gap: var(--space-64);
+    padding: 0 12px;
+    font-size: 12px;
   }
 
   .section-heading {
-    font-size: clamp(32px, 10vw, 48px);
+    font-size: var(--section-heading-size);
   }
 
-
   .blurred-cols {
-    padding-left: var(--space-16);
-    padding-right: var(--space-16);
+    padding-left: 0;
+    padding-right: 0;
     gap: var(--space-24);
   }
 
-  .blurred-text {
-    font-size: 1rem;
-    line-height: 1.55;
-  }
-
   .space-paragraph {
-    padding-left: var(--space-16);
-    font-size: clamp(1rem, 5vw, 2rem);
+    font-size: var(--space-paragraph-size);
     gap: 0 0.3em;
     letter-spacing: 0.2px;
-  }
-
-  .footer {
-    padding: var(--space-80) var(--space-40);
   }
 
   .footer-grid {
@@ -1728,23 +1636,18 @@ body.nav-open--light .nav-overlay-menu a {
   }
 
   .section {
-    padding: var(--space-80) var(--space-24);
+    padding: var(--section-padding-y) var(--section-padding-x);
     gap: var(--space-40);
   }
 
-  .section-heading {
-    font-size: clamp(32px, 10vw, 48px);
-  }
-
   .blurred-cols {
-    padding-left: var(--space-12);
-    padding-right: var(--space-12);
+    padding-left: 0;
+    padding-right: 0;
     gap: var(--space-16);
   }
 
   .space-paragraph {
-    padding-left: var(--space-12);
-    font-size: clamp(1rem, 4.5vw, 1.5rem);
+    font-size: var(--space-paragraph-size);
     gap: 0 0.3em;
     letter-spacing: 0.2px;
   }
